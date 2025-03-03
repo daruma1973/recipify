@@ -1,6 +1,6 @@
-name,category,unit,costPerUnit,inStock,minStockLevel,description,supplier,notes
-Olive Oil,Oil,liter,12.99,5,2,Extra virgin olive oil,Olive Farms,Cold pressed
-Flour,Dry Goods,kg,1.50,10,5,All-purpose flour,Baker's Supply,Unbleached
-Salt,Spices,kg,0.80,3,1,Sea salt,Seasoning Co.,Fine grain
-Chicken Breast,Meat,kg,8.99,4,2,Boneless skinless chicken breast,Poultry Farm,Organic
-Garlic,Produce,kg,5.99,1,0.5,Fresh garlic,Local Farm,Organic 
+name,code,consumerName,category,supplier,internalSupplier,productGroups,itemClass,price,totalUOM,unitType,unit,costPerUnit,totalUnits,alternativeUnit,alternativeSize,useAvgWeight,avgWeight,packSize,packSizeUnit,splitPack,packSizeInfo,netWeight,expirationDate,taxClass,taxValue,notes,isActive,allergens_celery,allergens_gluten,allergens_crustaceans,allergens_eggs,allergens_fish,allergens_lupin,allergens_milk,allergens_molluscs,allergens_mustard,allergens_nuts,allergens_peanuts,allergens_sesameSeeds,allergens_soybeans,allergens_sulphurDioxide,nutritionalInfo_calories,nutritionalInfo_protein,nutritionalInfo_carbs,nutritionalInfo_fat,nutritionalInfo_fiber
+Example Ingredient,,,,,,,,,,kg,kg,,,,,,,,,,,,,STD,,,true,,,,,,,,,,,,,,,,,
+Chopped Tomatoes(6 x 2.5KG),17576,Chopped Tomatoes(6 x 2.5KG),Default,Bidfood,,,Food class,21.03,15,kg,kg,1.402,15,each,6,,,,,,6x2.5kg,,,STD,0,,true,,,,,,,,,,,,,,,16,1,3,0.1,0.7
+Free Range Chilled Egg Whites(12 x 1KG),43152,Free Range Chilled Egg Whites(12 x 1KG),Default,Bidfood,,,Food class,49.07,12,kg,kg,4.089,12,each,12,,,,,,12x1kg,,,STD,0,,true,,,,true,,,,,,,,,,,43,10.8,0,0,0
+Dr. Oetker Marzipan Ready To Roll(6 x 1KG),78815,Dr. Oetker Marzipan Ready To Roll(6 x 1KG),Default,Bidfood,,,Food class,34.48,6,kg,kg,5.747,6,each,6,,,,,,6x1kg,,,STD,0,,true,,,,,,,,,,false,,,,,432,5.7,69,14,1.8
+Maldon Sea Salt(1 x 1.4KG),07650,Maldon Sea Salt(1 x 1.4KG),"Dried Herbs, Spices and Salts",Bidfood,,,Food class,10.39,1.4,kg,kg,7.421,1.4,each,1,,,,,,1x1.4kg,,,STD,0,,true,,,,,,,,,,,,,,,1,0,0,0,0

@@ -47,6 +47,7 @@ import AuthContext from '../../context/auth/authContext';
 import IngredientContext from '../../context/ingredient/ingredientContext';
 import AlertContext from '../../context/alert/alertContext';
 import IngredientCSVUpload from './IngredientCSVUpload';
+import CurrencyDisplay from '../common/CurrencyDisplay';
 
 const Ingredients = () => {
   const authContext = useContext(AuthContext);
@@ -70,6 +71,7 @@ const Ingredients = () => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [search, setSearch] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
+  const [supplierFilter, setSupplierFilter] = useState('');
   const [confirmDelete, setConfirmDelete] = useState(null);
   const [importDialogOpen, setImportDialogOpen] = useState(false);
   
@@ -140,6 +142,11 @@ const Ingredients = () => {
   // Handle category filter change
   const handleCategoryChange = (e) => {
     setCategoryFilter(e.target.value);
+  };
+
+  // Handle supplier filter change
+  const handleSupplierChange = (e) => {
+    setSupplierFilter(e.target.value);
   };
 
   // Handle pagination changes
@@ -214,14 +221,21 @@ const Ingredients = () => {
     setAlert('Inventory exported successfully', 'success');
   };
 
-  // Filter ingredients by category if categoryFilter is set
-  const filteredIngredients = categoryFilter
-    ? (filtered || ingredients || []).filter(ingredient => ingredient.category === categoryFilter)
-    : (filtered || ingredients || []);
+  // Filter ingredients by category and supplier if filters are set
+  const filteredIngredients = (filtered || ingredients || [])
+    .filter(ingredient => 
+      (!categoryFilter || ingredient.category === categoryFilter) &&
+      (!supplierFilter || (ingredient.supplier && ingredient.supplier.name === supplierFilter))
+    );
 
   // Get unique categories for the filter dropdown
   const categories = ingredients
-    ? [...new Set(ingredients.map(ingredient => ingredient.category))]
+    ? [...new Set(ingredients.map(ingredient => ingredient.category).filter(Boolean))]
+    : [];
+    
+  // Get unique suppliers for the filter dropdown
+  const suppliers = ingredients
+    ? [...new Set(ingredients.filter(i => i.supplier).map(i => i.supplier.name).filter(Boolean))]
     : [];
 
   // Bulk delete handlers
@@ -278,15 +292,6 @@ const Ingredients = () => {
         <Typography variant="h4" component="h1">
           Inventory Items
         </Typography>
-        <Button
-          variant="contained"
-          color="primary"
-          startIcon={<AddIcon />}
-          component={Link}
-          to="/inventory/add"
-        >
-          Add Product
-        </Button>
       </Box>
 
       <Box sx={{ display: 'flex', gap: 2, mb: 3, flexWrap: 'wrap' }}>
@@ -393,6 +398,27 @@ const Ingredients = () => {
                 {categories.map((category) => (
                   <MenuItem key={category} value={category}>
                     {category}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <FormControl fullWidth variant="outlined">
+              <InputLabel id="supplier-filter-label">Filter by Supplier</InputLabel>
+              <Select
+                labelId="supplier-filter-label"
+                id="supplier-filter"
+                value={supplierFilter}
+                onChange={handleSupplierChange}
+                label="Filter by Supplier"
+              >
+                <MenuItem value="">
+                  <em>All Suppliers</em>
+                </MenuItem>
+                {suppliers.map((supplier) => (
+                  <MenuItem key={supplier} value={supplier}>
+                    {supplier}
                   </MenuItem>
                 ))}
               </Select>
@@ -510,7 +536,7 @@ const Ingredients = () => {
                           {ingredient.name}
                         </TableCell>
                         <TableCell>{ingredient.category}</TableCell>
-                        <TableCell>${ingredient.cost.toFixed(2)}</TableCell>
+                        <TableCell><CurrencyDisplay amount={ingredient.cost} /></TableCell>
                         <TableCell>{`${ingredient.unitSize} ${ingredient.unitType}`}</TableCell>
                         <TableCell>
                           {ingredient.supplier ? ingredient.supplier.name : 'N/A'}
@@ -526,7 +552,7 @@ const Ingredients = () => {
                           <IconButton
                             color="primary"
                             component={Link}
-                            to={`/ingredients/${ingredient._id}`}
+                            to={`/inventory/${ingredient._id}`}
                             size="small"
                           >
                             <VisibilityIcon />
@@ -534,7 +560,7 @@ const Ingredients = () => {
                           <IconButton
                             color="primary"
                             component={Link}
-                            to={`/ingredients/edit/${ingredient._id}`}
+                            to={`/inventory/edit/${ingredient._id}`}
                             size="small"
                           >
                             <EditIcon />
@@ -575,7 +601,7 @@ const Ingredients = () => {
           </Table>
         </TableContainer>
         <TablePagination
-          rowsPerPageOptions={[5, 10, 25]}
+          rowsPerPageOptions={[10, 25, 50, 100, 200, 500]}
           component="div"
           count={filteredIngredients.length}
           rowsPerPage={rowsPerPage}
