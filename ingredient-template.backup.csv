@@ -1,0 +1,6 @@
+name,category,unit,costPerUnit,inStock,minStockLevel,description,supplier,notes
+Olive Oil,Oil,liter,12.99,5,2,Extra virgin olive oil,Olive Farms,Cold pressed
+Flour,Dry Goods,kg,1.50,10,5,All-purpose flour,Baker's Supply,Unbleached
+Salt,Spices,kg,0.80,3,1,Sea salt,Seasoning Co.,Fine grain
+Chicken Breast,Meat,kg,8.99,4,2,Boneless skinless chicken breast,Poultry Farm,Organic
+Garlic,Produce,kg,5.99,1,0.5,Fresh garlic,Local Farm,Organic 
