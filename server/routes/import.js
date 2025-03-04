@@ -19,6 +19,16 @@ try {
   sharp = null;
 }
 
+// Try to load cloudinary uploader
+let cloudinaryUploader;
+try {
+  cloudinaryUploader = require('../utils/cloudinaryUploader');
+  console.log('Cloudinary uploader loaded successfully');
+} catch (err) {
+  console.warn('Warning: Cloudinary uploader not available. Using local file storage:', err.message);
+  cloudinaryUploader = null;
+}
+
 // Set up multer storage
 const storage = multer.diskStorage({
   destination: function(req, file, cb) {
@@ -189,6 +199,20 @@ router.post('/ocr', upload.single('image'), async (req, res) => {
     console.log(`File size on disk: ${stats.size} bytes`);
     
     let processedImagePath = imagePath;
+    let cloudinaryUrl = null;
+    
+    // If cloudinary is available, upload the image
+    if (cloudinaryUploader) {
+      try {
+        console.log('Uploading image to Cloudinary...');
+        const cloudinaryResult = await cloudinaryUploader.uploadFile(imagePath);
+        cloudinaryUrl = cloudinaryResult.secure_url;
+        console.log(`Image uploaded to Cloudinary: ${cloudinaryUrl}`);
+      } catch (cloudinaryError) {
+        console.error('Error uploading to Cloudinary:', cloudinaryError);
+        console.log('Falling back to local file processing');
+      }
+    }
     
     // Try to preprocess the image with Sharp if available
     let sharpWorking = false;
@@ -248,114 +272,118 @@ router.post('/ocr', upload.single('image'), async (req, res) => {
     
     console.log('Starting Tesseract OCR processing...');
     
-    try {
-      // Create a relative URL for the uploaded image
-      const imageUrl = `/uploads/${path.basename(imagePath)}`;
-      console.log(`Image will be accessible at: ${imageUrl}`);
-      
-      // Use Tesseract.js to extract text from the image
-      const result = await Tesseract.recognize(
-        processedImagePath,
-        'eng', // English language
-        { 
-          logger: info => {
-            console.log(`OCR progress: ${info.status} (${Math.floor(info.progress * 100)}%)`);
+    // Use cloudinary URL if available, otherwise use the local file path
+    const imageToProcess = cloudinaryUrl || processedImagePath;
+    
+    // Run OCR on the image
+    const result = await Tesseract.recognize(
+      imageToProcess,
+      'eng',
+      { 
+        logger: progress => {
+          // Optional: log progress
+          if (progress.status === 'recognizing text') {
+            // Use progress.progress for a percentage
+            console.log(`OCR Progress: ${Math.round(progress.progress * 100)}%`);
           }
         }
-      );
-      
-      // Check if text was extracted
-      const extractedText = result.data.text.trim();
-      console.log(`Text extraction complete. Extracted ${extractedText.length} characters.`);
-      
-      if (extractedText.length === 0) {
-        console.log('No text extracted from the image');
-        return res.status(200).json({
-          success: true,
-          imageUrl: imageUrl,
-          extractedText: '',
-          recipe: {
-            name: '',
-            ingredients: [],
-            instructions: []
-          },
-          message: 'No text could be extracted from the image. Please try a clearer image or manually enter the recipe details.'
-        });
       }
-      
-      console.log('Sample of extracted text:', extractedText.substring(0, 100) + '...');
-      
-      // Parse the extracted text to identify recipe components
-      const parsedRecipe = parseRecipeFromText(extractedText);
-      
-      // Clean up temporary files
-      try {
-        if (processedImagePath !== imagePath && fs.existsSync(processedImagePath)) {
-          fs.unlinkSync(processedImagePath);
-          console.log(`Deleted processed image: ${processedImagePath}`);
-        }
-      } catch (cleanupError) {
-        console.error('Error cleaning up temporary files:', cleanupError);
-      }
-      
-      // Format recipe data for client display
-      // Ensure ingredients and instructions are properly formatted as strings
-      const formattedRecipe = {
-        name: parsedRecipe.name || '',
-        description: parsedRecipe.description || '',
-        notes: parsedRecipe.notes || '',
-        primaryCategory: parsedRecipe.primaryCategory || 'Other',
-        servings: parsedRecipe.servings || 1,
-        prepTime: parsedRecipe.prepTime || 0,
-        cookTime: parsedRecipe.cookTime || 0,
-        
-        // Make sure these are strings, not objects
-        ingredients: parsedRecipe.ingredients.map(item => {
-          // If it's already a string, return it
-          if (typeof item === 'string') return item;
-          // If it's an object with a specific structure, format it
-          if (item && typeof item === 'object') {
-            if (item.name) {
-              return `${item.quantity || ''} ${item.unit || ''} ${item.name}`.trim();
-            }
-          }
-          // Fallback: convert to string
-          return String(item);
-        }),
-        
-        // Make sure these are strings, not objects
-        instructions: parsedRecipe.instructions.map(item => {
-          // If it's already a string, return it
-          if (typeof item === 'string') return item;
-          // If it's an object with step property, extract it
-          if (item && typeof item === 'object' && item.step) {
-            return item.step;
-          }
-          // Fallback: convert to string
-          return String(item);
-        })
-      };
-      
-      console.log('Formatted recipe data:', JSON.stringify(formattedRecipe, null, 2));
-      
-      // Return the extracted recipe data
-      return res.json({
+    );
+    
+    // Check if text was extracted
+    const extractedText = result.data.text.trim();
+    console.log(`Text extraction complete. Extracted ${extractedText.length} characters.`);
+    
+    if (extractedText.length === 0) {
+      console.log('No text extracted from the image');
+      return res.status(200).json({
         success: true,
-        imageUrl: imageUrl,
-        extractedText,
-        recipe: formattedRecipe
-      });
-    } catch (tesseractError) {
-      console.error('Tesseract OCR error:', tesseractError);
-      return res.status(500).json({ 
-        success: false, 
-        error: 'OCR processing failed',
-        message: 'Failed to process image text. Please try another image or manually enter recipe details.',
-        details: tesseractError.message
+        imageUrl: cloudinaryUrl || imageToProcess,
+        extractedText: '',
+        recipe: {
+          name: '',
+          ingredients: [],
+          instructions: []
+        },
+        message: 'No text could be extracted from the image. Please try a clearer image or manually enter the recipe details.'
       });
     }
-  } catch (error) {
-    console.error('OCR processing error:', error);
+    
+    console.log('Sample of extracted text:', extractedText.substring(0, 100) + '...');
+    
+    // Parse the extracted text to identify recipe components
+    const parsedRecipe = parseRecipeFromText(extractedText);
+    
+    // Clean up temporary files
+    try {
+      if (processedImagePath !== imagePath && fs.existsSync(processedImagePath)) {
+        fs.unlinkSync(processedImagePath);
+        console.log(`Deleted processed image: ${processedImagePath}`);
+      }
+    } catch (cleanupError) {
+      console.error('Error cleaning up temporary files:', cleanupError);
+    }
+    
+    // Format recipe data for client display
+    // Ensure ingredients and instructions are properly formatted as strings
+    const formattedRecipe = {
+      name: parsedRecipe.name || '',
+      description: parsedRecipe.description || '',
+      notes: parsedRecipe.notes || '',
+      primaryCategory: parsedRecipe.primaryCategory || 'Other',
+      servings: parsedRecipe.servings || 1,
+      prepTime: parsedRecipe.prepTime || 0,
+      cookTime: parsedRecipe.cookTime || 0,
+      
+      // Make sure these are strings, not objects
+      ingredients: parsedRecipe.ingredients.map(item => {
+        // If it's already a string, return it
+        if (typeof item === 'string') return item;
+        // If it's an object with a specific structure, format it
+        if (item && typeof item === 'object') {
+          if (item.name) {
+            return `${item.quantity || ''} ${item.unit || ''} ${item.name}`.trim();
+          }
+        }
+        // Fallback: convert to string
+        return String(item);
+      }),
+      
+      // Make sure these are strings, not objects
+      instructions: parsedRecipe.instructions.map(item => {
+        // If it's already a string, return it
+        if (typeof item === 'string') return item;
+        // If it's an object with step property, extract it
+        if (item && typeof item === 'object' && item.step) {
+          return item.step;
+        }
+        // Fallback: convert to string
+        return String(item);
+      })
+    };
+    
+    console.log('Formatted recipe data:', JSON.stringify(formattedRecipe, null, 2));
+    
+    // Clean up the uploaded file if it exists and we're using Cloudinary
+    // We can safely remove the local file since it's now in Cloudinary
+    if (req.file && req.file.path && cloudinaryUrl) {
+      try {
+        fs.unlinkSync(req.file.path);
+        console.log(`Cleaned up local file after Cloudinary upload: ${req.file.path}`);
+      } catch (err) {
+        console.error('Error removing uploaded file:', err);
+      }
+    }
+    
+    // Return the extracted recipe data
+    return res.json({
+      success: true,
+      imageUrl: cloudinaryUrl || imageToProcess,
+      extractedText,
+      recipe: formattedRecipe
+    });
+  } catch (err) {
+    console.error('OCR processing error:', err);
     
     // Clean up the uploaded file if it exists
     try {
@@ -371,7 +399,7 @@ router.post('/ocr', upload.single('image'), async (req, res) => {
       success: false, 
       error: 'OCR processing failed', 
       message: 'Failed to process image. Please try again or manually enter the recipe.',
-      details: error.message
+      details: err.message
     });
   }
 });
