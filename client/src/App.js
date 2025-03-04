@@ -292,6 +292,7 @@ const App = () => {
                 <Route path="/recipes" element={<PrivateRoute component={Recipes} />} />
                 <Route path="/recipes/add" element={<PrivateRoute component={RecipeForm} />} />
                 <Route path="/recipes/edit/:id" element={<PrivateRoute component={RecipeForm} />} />
+                <Route path="/recipes/import" element={<PrivateRoute component={RecipeImport} />} />
                 <Route path="/recipes/:id" element={<PrivateRoute component={RecipeDetail} />} />
                 <Route path="/dashboard" element={<PrivateRoute component={Dashboard} />} />
                 <Route path="/" element={

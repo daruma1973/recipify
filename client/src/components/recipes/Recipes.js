@@ -163,15 +163,36 @@ const Recipes = () => {
         <Typography variant="h4" component="h1" fontWeight="bold">
           Recipe Collection
         </Typography>
-        <Button
-          variant="contained"
-          color="primary"
-          startIcon={<AddIcon />}
-          component={Link}
-          to="/recipes/add"
+        <Paper 
+          elevation={2} 
+          sx={{ 
+            display: 'flex', 
+            flexDirection: { xs: 'column', md: 'row' }, 
+            gap: 2,
+            alignItems: 'center',
+            borderRadius: 2
+          }}
         >
-          Add Recipe
-        </Button>
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<AddIcon />}
+            component={Link}
+            to="/recipes/add"
+          >
+            Add Recipe
+          </Button>
+          <Button
+            variant="outlined"
+            color="primary"
+            startIcon={<ImportExportIcon />}
+            component={Link}
+            to="/recipes/import"
+            sx={{ mt: 2, ml: 2 }}
+          >
+            Import Recipe
+          </Button>
+        </Paper>
       </Box>
 
       {/* Search & Filter Bar */}
@@ -253,6 +274,16 @@ const Recipes = () => {
             sx={{ mt: 2 }}
           >
             Add Recipe
+          </Button>
+          <Button
+            variant="outlined"
+            color="primary"
+            startIcon={<ImportExportIcon />}
+            component={Link}
+            to="/recipes/import"
+            sx={{ mt: 2, ml: 2 }}
+          >
+            Import Recipe
           </Button>
         </Paper>
       ) : (
