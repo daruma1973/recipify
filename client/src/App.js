@@ -16,6 +16,7 @@ import Alerts from './components/layout/Alerts';
 import PrivateRoute from './components/routing/PrivateRoute';
 import NotFound from './components/pages/NotFound';
 import Landing from './components/pages/Landing';
+import Settings from './components/pages/Settings';
 
 // Ingredient Components
 import Ingredients from './components/ingredients/Ingredients';
@@ -51,6 +52,7 @@ import RecipeState from './context/recipe/RecipeState';
 import CostingState from './context/costing/CostingState';
 import ImportState from './context/import/ImportState';
 import RecipeSourceState from './context/recipeSource/RecipeSourceState';
+import SettingsState from './context/settings/SettingsState';
 
 // Utils
 import setAuthToken from './utils/setAuthToken';
@@ -295,6 +297,7 @@ const App = () => {
                 <Route path="/recipes/import" element={<PrivateRoute component={RecipeImport} />} />
                 <Route path="/recipes/:id" element={<PrivateRoute component={RecipeDetail} />} />
                 <Route path="/dashboard" element={<PrivateRoute component={Dashboard} />} />
+                <Route path="/settings" element={<PrivateRoute component={Settings} />} />
                 <Route path="/" element={
                   localStorage.token ? <Dashboard /> : <Landing />
                 } />
@@ -316,7 +319,9 @@ const App = () => {
               <CostingState>
                 <ImportState>
                   <RecipeSourceState>
-                    {renderApp()}
+                    <SettingsState>
+                      {renderApp()}
+                    </SettingsState>
                   </RecipeSourceState>
                 </ImportState>
               </CostingState>
