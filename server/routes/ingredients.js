@@ -459,4 +459,19 @@ router.delete('/:id', auth, async (req, res) => {
   }
 });
 
+// @route   DELETE api/ingredients/all
+// @desc    Delete all ingredients
+// @access  Private
+router.delete('/all', auth, async (req, res) => {
+  try {
+    // Delete all ingredients
+    await Ingredient.deleteMany({});
+    
+    res.json({ msg: 'All ingredients deleted' });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+});
+
 module.exports = router; 

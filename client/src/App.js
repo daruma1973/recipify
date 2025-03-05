@@ -1,8 +1,11 @@
 import React, { Fragment, useContext, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import Container from '@mui/material/Container';
+
+// Import our Honk-inspired theme
+import honkTheme from './utils/honkTheme';
 
 // Components
 import Navbar from './components/layout/Navbar';
@@ -24,6 +27,9 @@ import IngredientForm from './components/ingredients/IngredientForm';
 import IngredientDetail from './components/ingredients/IngredientDetail';
 import TakeInventory from './components/ingredients/TakeInventory';
 import ManageLocations from './components/ingredients/ManageLocations';
+import ResetProducts from './components/ingredients/ResetProducts';
+import NewProductSystem from './components/ingredients/NewProductSystem';
+import ProductSystemReset from './components/ingredients/ProductSystemReset';
 
 // Supplier Components
 import Suppliers from './components/suppliers/Suppliers';
@@ -65,197 +71,6 @@ if (localStorage.token) {
   console.log('App.js: No token found in localStorage');
 }
 
-// Create theme
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: '#121212',
-      light: '#3b3b3b',
-      dark: '#000000',
-    },
-    secondary: {
-      main: '#5c6bc0',
-      light: '#8e99f3',
-      dark: '#26418f',
-    },
-    background: {
-      default: '#fafafa',
-      paper: '#ffffff',
-    },
-    text: {
-      primary: '#121212',
-      secondary: '#545454',
-    },
-    divider: 'rgba(0, 0, 0, 0.08)',
-  },
-  typography: {
-    fontFamily: [
-      'Inter',
-      '-apple-system',
-      'BlinkMacSystemFont',
-      'Segoe UI',
-      'Roboto',
-      'Helvetica Neue',
-      'Arial',
-      'sans-serif',
-    ].join(','),
-    h1: {
-      fontWeight: 700,
-      fontSize: '2.5rem',
-      letterSpacing: '-0.01562em',
-    },
-    h2: {
-      fontWeight: 600, 
-      fontSize: '2rem',
-      letterSpacing: '-0.00833em',
-    },
-    h3: {
-      fontWeight: 600,
-      fontSize: '1.75rem', 
-      letterSpacing: '0em',
-    },
-    h4: {
-      fontWeight: 600,
-      fontSize: '1.5rem',
-      letterSpacing: '0.00735em',
-    },
-    h5: {
-      fontWeight: 600,
-      fontSize: '1.25rem',
-      letterSpacing: '0em',
-    },
-    h6: {
-      fontWeight: 600,
-      fontSize: '1rem',
-      letterSpacing: '0.0075em',
-    },
-    subtitle1: {
-      fontWeight: 500,
-      fontSize: '1rem',
-    },
-    body1: {
-      fontSize: '1rem',
-      lineHeight: 1.6,
-    },
-    body2: {
-      fontSize: '0.875rem',
-      lineHeight: 1.6,
-    },
-    button: {
-      textTransform: 'none',
-      fontWeight: 500,
-    },
-  },
-  shape: {
-    borderRadius: 8,
-  },
-  spacing: factor => `${0.5 * factor}rem`,
-  components: {
-    MuiContainer: {
-      styleOverrides: {
-        root: {
-          paddingLeft: '2rem',
-          paddingRight: '2rem',
-          '@media (min-width: 600px)': {
-            paddingLeft: '3rem',
-            paddingRight: '3rem',
-          },
-        },
-      },
-    },
-    MuiButton: {
-      styleOverrides: {
-        root: {
-          borderRadius: 8,
-          padding: '0.5rem 1.5rem',
-          fontWeight: 500,
-          boxShadow: 'none',
-          '&:hover': {
-            boxShadow: 'none',
-          },
-        },
-        contained: {
-          '&:hover': {
-            boxShadow: 'none',
-          },
-        },
-        outlined: {
-          borderWidth: '1.5px',
-          '&:hover': {
-            borderWidth: '1.5px',
-          },
-        },
-      },
-    },
-    MuiCard: {
-      styleOverrides: {
-        root: {
-          boxShadow: 'none',
-          border: '1px solid rgba(0, 0, 0, 0.08)',
-          borderRadius: 12,
-          transition: 'transform 0.2s ease-in-out, border-color 0.2s ease-in-out',
-          '&:hover': {
-            transform: 'translateY(-4px)',
-            borderColor: 'rgba(0, 0, 0, 0.12)',
-          },
-        },
-      },
-    },
-    MuiCardContent: {
-      styleOverrides: {
-        root: {
-          padding: '1.5rem',
-          '&:last-child': {
-            paddingBottom: '1.5rem',
-          },
-        },
-      },
-    },
-    MuiTextField: {
-      styleOverrides: {
-        root: {
-          '& .MuiOutlinedInput-root': {
-            borderRadius: 8,
-            '& fieldset': {
-              borderColor: 'rgba(0, 0, 0, 0.12)',
-            },
-            '&:hover fieldset': {
-              borderColor: 'rgba(0, 0, 0, 0.24)',
-            },
-          },
-        },
-      },
-    },
-    MuiDivider: {
-      styleOverrides: {
-        root: {
-          margin: '1.5rem 0',
-        },
-      },
-    },
-    MuiPaper: {
-      styleOverrides: {
-        root: {
-          boxShadow: 'none',
-          border: '1px solid rgba(0, 0, 0, 0.08)',
-          borderRadius: 12,
-        },
-        elevation1: {
-          boxShadow: 'none',
-        },
-      },
-    },
-    MuiAppBar: {
-      styleOverrides: {
-        root: {
-          boxShadow: 'none',
-          borderBottom: '1px solid rgba(0, 0, 0, 0.08)',
-        },
-      },
-    },
-  },
-});
-
 const App = () => {
   const authContext = useContext(AuthContext);
 
@@ -272,7 +87,7 @@ const App = () => {
   // This will render the basic application structure
   const renderApp = () => {
     return (
-      <ThemeProvider theme={theme}>
+      <ThemeProvider theme={honkTheme}>
         <CssBaseline />
         <Router>
           <Fragment>
@@ -298,10 +113,12 @@ const App = () => {
                 <Route path="/recipes/:id" element={<PrivateRoute component={RecipeDetail} />} />
                 <Route path="/dashboard" element={<PrivateRoute component={Dashboard} />} />
                 <Route path="/settings" element={<PrivateRoute component={Settings} />} />
-                <Route path="/" element={
-                  localStorage.token ? <Dashboard /> : <Landing />
-                } />
-                <Route path="*" element={<NotFound />} />
+                <Route path="/profile" element={<PrivateRoute component={Profile} />} />
+                <Route path="/reset-products" element={<PrivateRoute component={ResetProducts} />} />
+                <Route path="/new-product-system" element={<PrivateRoute component={NewProductSystem} />} />
+                <Route path="/product-system-reset" element={<PrivateRoute component={ProductSystemReset} />} />
+                <Route path="/" element={<Landing />} />
+                <Route path="/*" element={<NotFound />} />
               </Routes>
             </Container>
           </Fragment>
@@ -311,11 +128,11 @@ const App = () => {
   };
 
   return (
-    <AlertState>
-      <AuthState>
-        <RecipeState>
-          <IngredientState>
-            <SupplierState>
+    <AuthState>
+      <AlertState>
+        <IngredientState>
+          <SupplierState>
+            <RecipeState>
               <CostingState>
                 <ImportState>
                   <RecipeSourceState>
@@ -325,11 +142,11 @@ const App = () => {
                   </RecipeSourceState>
                 </ImportState>
               </CostingState>
-            </SupplierState>
-          </IngredientState>
-        </RecipeState>
-      </AuthState>
-    </AlertState>
+            </RecipeState>
+          </SupplierState>
+        </IngredientState>
+      </AlertState>
+    </AuthState>
   );
 };
 

@@ -3,6 +3,7 @@ import {
   GET_INGREDIENT,
   ADD_INGREDIENT,
   DELETE_INGREDIENT,
+  DELETE_ALL_INGREDIENTS,
   UPDATE_INGREDIENT,
   CLEAR_INGREDIENTS,
   FILTER_INGREDIENTS,
@@ -47,6 +48,12 @@ export default (state, action) => {
         ingredients: state.ingredients.filter(
           ingredient => ingredient._id !== action.payload
         ),
+        loading: false
+      };
+    case DELETE_ALL_INGREDIENTS:
+      return {
+        ...state,
+        ingredients: [],
         loading: false
       };
     case CLEAR_INGREDIENTS:

@@ -13,7 +13,7 @@ const PrivateRoute = ({ component: Component }) => {
   
   if (!Component) {
     console.error('PrivateRoute - Component is null or undefined!');
-    return <div>Error: Component not found</div>;
+    return <div>Error: The requested component could not be found. This page might not exist yet.</div>;
   }
   
   try {

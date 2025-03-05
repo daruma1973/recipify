@@ -1,5 +1,5 @@
-import React, { Fragment, useContext, useState } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import React, { Fragment, useContext, useState, useEffect } from 'react';
+import { Link as RouterLink, useLocation } from 'react-router-dom';
 import AuthContext from '../../context/auth/authContext';
 import {
   AppBar,
@@ -15,57 +15,145 @@ import {
   Avatar,
   Tooltip,
   Divider,
-  Container
+  Container,
+  Drawer,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Collapse,
+  Badge
 } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import MenuIcon from '@mui/icons-material/Menu';
+import CloseIcon from '@mui/icons-material/Close';
+import DashboardIcon from '@mui/icons-material/Dashboard';
 import AccountCircle from '@mui/icons-material/AccountCircle';
-import DarkModeIcon from '@mui/icons-material/DarkMode';
-import LightModeIcon from '@mui/icons-material/LightMode';
+import SettingsIcon from '@mui/icons-material/Settings';
 import RestaurantMenuIcon from '@mui/icons-material/RestaurantMenu';
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import ExpandLess from '@mui/icons-material/ExpandLess';
+import ExpandMore from '@mui/icons-material/ExpandMore';
 import InventoryIcon from '@mui/icons-material/Inventory';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
+import InfoIcon from '@mui/icons-material/Info';
+import LogoutIcon from '@mui/icons-material/Logout';
+import LocalShippingIcon from '@mui/icons-material/LocalShipping';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+
+const StyledAppBar = styled(AppBar)(({ theme }) => ({
+  backgroundColor: 'rgba(255, 255, 255, 0.9)',
+  backdropFilter: 'blur(10px)',
+  boxShadow: 'none',
+  borderBottom: '1px solid',
+  borderColor: theme.palette.divider,
+  [theme.breakpoints.up('lg')]: {
+    paddingLeft: theme.spacing(2),
+    paddingRight: theme.spacing(2),
+  }
+}));
+
+const BrandLogo = styled(Typography)(({ theme }) => ({
+  fontWeight: 800,
+  letterSpacing: '-0.5px',
+  color: theme.palette.text.primary,
+  display: 'flex',
+  alignItems: 'center',
+  '& svg': {
+    marginRight: theme.spacing(1),
+    color: theme.palette.primary.main
+  }
+}));
+
+const NavItem = styled(Button)(({ theme, active }) => ({
+  textTransform: 'none',
+  fontSize: '0.95rem',
+  fontWeight: 500,
+  color: active ? theme.palette.primary.main : theme.palette.text.primary,
+  padding: theme.spacing(1, 1.5),
+  borderRadius: theme.shape.borderRadius,
+  '&:hover': {
+    backgroundColor: 'rgba(0, 0, 0, 0.03)',
+    color: theme.palette.primary.main
+  },
+  ...(active && {
+    backgroundColor: 'rgba(0, 0, 0, 0.04)',
+  })
+}));
+
+const MobileNavItem = styled(ListItemButton)(({ theme, active }) => ({
+  borderRadius: theme.shape.borderRadius,
+  marginBottom: 4,
+  ...(active && {
+    backgroundColor: 'rgba(0, 0, 0, 0.04)',
+    color: theme.palette.primary.main,
+    '& .MuiListItemIcon-root': {
+      color: theme.palette.primary.main,
+    }
+  })
+}));
+
+const UserAvatar = styled(Avatar)(({ theme }) => ({
+  width: 38,
+  height: 38,
+  backgroundColor: theme.palette.primary.main,
+  fontSize: '0.9rem',
+  fontWeight: 700,
+  cursor: 'pointer',
+  transition: 'transform 0.2s ease',
+  border: '2px solid white',
+  boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+  '&:hover': {
+    transform: 'scale(1.05)'
+  }
+}));
 
 const Navbar = () => {
+  const location = useLocation();
   const authContext = useContext(AuthContext);
   const { isAuthenticated, logout, user } = authContext;
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const isSmall = useMediaQuery(theme.breakpoints.down('sm'));
 
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [mobileMenuAnchorEl, setMobileMenuAnchorEl] = useState(null);
-  const [inventoryMenuAnchorEl, setInventoryMenuAnchorEl] = useState(null);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [userMenuAnchor, setUserMenuAnchor] = useState(null);
+  const [inventoryOpen, setInventoryOpen] = useState(false);
+  const [notificationAnchor, setNotificationAnchor] = useState(null);
+  
+  // Close drawer when path changes (mobile navigation)
+  useEffect(() => {
+    setDrawerOpen(false);
+  }, [location.pathname]);
 
-  const handleMenu = (event) => {
-    setAnchorEl(event.currentTarget);
+  const handleUserMenu = (event) => {
+    setUserMenuAnchor(event.currentTarget);
   };
 
-  const handleMobileMenu = (event) => {
-    setMobileMenuAnchorEl(event.currentTarget);
+  const handleNotificationMenu = (event) => {
+    setNotificationAnchor(event.currentTarget);
   };
 
-  const handleInventoryMenu = (event) => {
-    setInventoryMenuAnchorEl(event.currentTarget);
+  const handleDrawerToggle = () => {
+    setDrawerOpen(!drawerOpen);
   };
 
-  const handleClose = () => {
-    setAnchorEl(null);
+  const handleInventoryToggle = () => {
+    setInventoryOpen(!inventoryOpen);
   };
 
-  const handleMobileMenuClose = () => {
-    setMobileMenuAnchorEl(null);
+  const closeUserMenu = () => {
+    setUserMenuAnchor(null);
   };
 
-  const handleInventoryMenuClose = () => {
-    setInventoryMenuAnchorEl(null);
+  const closeNotificationMenu = () => {
+    setNotificationAnchor(null);
   };
 
   const onLogout = () => {
     logout();
-    handleClose();
-    handleMobileMenuClose();
-    handleInventoryMenuClose();
+    closeUserMenu();
   };
 
   // Get user initials for avatar
@@ -78,384 +166,420 @@ const Navbar = () => {
     return (nameParts[0].charAt(0) + nameParts[nameParts.length - 1].charAt(0)).toUpperCase();
   };
 
+  const isActive = (path) => {
+    if (path === '/') {
+      return location.pathname === '/';
+    }
+    return location.pathname.startsWith(path);
+  };
+  
   const authLinks = (
     <Fragment>
       {isMobile ? (
-        <Fragment>
-          <IconButton
-            size="large"
-            edge="end"
-            color="inherit"
-            aria-label="menu"
-            onClick={handleMobileMenu}
-            sx={{ ml: 1 }}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Menu
-            anchorEl={mobileMenuAnchorEl}
-            anchorOrigin={{
-              vertical: 'top',
-              horizontal: 'right',
-            }}
-            keepMounted
-            transformOrigin={{
-              vertical: 'top',
-              horizontal: 'right',
-            }}
-            open={Boolean(mobileMenuAnchorEl)}
-            onClose={handleMobileMenuClose}
-            PaperProps={{
-              sx: {
-                mt: 1.5,
-                borderRadius: 2,
-                boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
-                border: '1px solid',
-                borderColor: 'divider',
-                minWidth: 200
-              }
-            }}
-          >
-            <MenuItem component={RouterLink} to="/dashboard" onClick={handleMobileMenuClose}>
-              Dashboard
-            </MenuItem>
-            
-            {/* Inventory Menu Items for Mobile */}
-            <MenuItem 
-              component={RouterLink} 
-              to="/inventory" 
-              onClick={handleMobileMenuClose}
-              sx={{ fontWeight: 600 }}
-            >
-              Inventory
-            </MenuItem>
-            <MenuItem 
-              component={RouterLink} 
-              to="/inventory" 
-              onClick={handleMobileMenuClose}
-              sx={{ pl: 4 }}
-            >
-              <InventoryIcon fontSize="small" sx={{ mr: 1 }} />
-              Inventory Items
-            </MenuItem>
-            <MenuItem 
-              component={RouterLink} 
-              to="/inventory/take" 
-              onClick={handleMobileMenuClose}
-              sx={{ pl: 4 }}
-            >
-              <CheckBoxIcon fontSize="small" sx={{ mr: 1 }} />
-              Take Inventory
-            </MenuItem>
-            <MenuItem 
-              component={RouterLink} 
-              to="/inventory/locations" 
-              onClick={handleMobileMenuClose}
-              sx={{ pl: 4 }}
-            >
-              <LocationOnIcon fontSize="small" sx={{ mr: 1 }} />
-              Manage Locations
-            </MenuItem>
-            
-            <MenuItem component={RouterLink} to="/suppliers" onClick={handleMobileMenuClose}>
-              Suppliers
-            </MenuItem>
-            <MenuItem component={RouterLink} to="/recipes" onClick={handleMobileMenuClose}>
-              Recipes
-            </MenuItem>
-            <MenuItem component={RouterLink} to="/about" onClick={handleMobileMenuClose}>
-              About
-            </MenuItem>
-            <Divider sx={{ my: 1 }} />
-            <MenuItem onClick={onLogout}>Logout</MenuItem>
-          </Menu>
-        </Fragment>
+        <IconButton
+          color="inherit"
+          aria-label="open drawer"
+          edge="start"
+          onClick={handleDrawerToggle}
+          sx={{ color: 'text.primary' }}
+        >
+          <MenuIcon />
+        </IconButton>
       ) : (
-        <Fragment>
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Button 
-              color="inherit" 
-              component={RouterLink} 
-              to="/dashboard"
-              sx={{ 
-                mx: 1,
-                fontSize: '0.95rem',
-                fontWeight: 500,
-                '&:hover': {
-                  bgcolor: 'transparent',
-                  color: 'primary.main'
-                }
-              }}
-            >
-              Dashboard
-            </Button>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+          <NavItem 
+            component={RouterLink} 
+            to="/dashboard"
+            active={isActive('/dashboard') ? 1 : 0}
+            disableRipple
+          >
+            Dashboard
+          </NavItem>
+          
+          <NavItem 
+            component={RouterLink} 
+            to="/recipes"
+            active={isActive('/recipes') ? 1 : 0}
+            disableRipple
+          >
+            Recipes
+          </NavItem>
+          
+          <NavItem 
+            component={RouterLink} 
+            to="/inventory"
+            active={isActive('/inventory') ? 1 : 0}
+            disableRipple
+          >
+            Inventory
+          </NavItem>
+          
+          <NavItem 
+            component={RouterLink} 
+            to="/suppliers"
+            active={isActive('/suppliers') ? 1 : 0}
+            disableRipple
+          >
+            Suppliers
+          </NavItem>
+        </Box>
+      )}
+
+      {/* Notification Icon & Menu */}
+      <Box sx={{ display: 'flex', alignItems: 'center', ml: 'auto' }}>
+        <Tooltip title="Notifications">
+          <IconButton 
+            onClick={handleNotificationMenu}
+            size="large"
+            color="inherit"
+            sx={{ mr: 1, color: 'text.secondary' }}
+          >
+            <Badge badgeContent={3} color="error">
+              <NotificationsIcon />
+            </Badge>
+          </IconButton>
+        </Tooltip>
+        
+        <Menu
+          anchorEl={notificationAnchor}
+          open={Boolean(notificationAnchor)}
+          onClose={closeNotificationMenu}
+          PaperProps={{
+            sx: {
+              width: 320,
+              maxWidth: '100%',
+              mt: 1.5,
+              borderRadius: 2,
+              boxShadow: '0 10px 40px rgba(0,0,0,0.1)',
+              border: '1px solid',
+              borderColor: 'divider',
+              overflow: 'visible',
+              '&:before': {
+                content: '""',
+                display: 'block',
+                position: 'absolute',
+                top: 0,
+                right: 14,
+                width: 10,
+                height: 10,
+                bgcolor: 'background.paper',
+                transform: 'translateY(-50%) rotate(45deg)',
+                zIndex: 0,
+                borderTop: '1px solid',
+                borderLeft: '1px solid',
+                borderColor: 'divider',
+              },
+            },
+          }}
+          transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+          anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+        >
+          <Box sx={{ p: 2, pb: 1 }}>
+            <Typography variant="subtitle1" fontWeight={600}>
+              Notifications
+            </Typography>
+          </Box>
+          <Divider />
+          
+          {/* Example notifications */}
+          <Box sx={{ maxHeight: 320, overflow: 'auto' }}>
+            <MenuItem sx={{ py: 2 }}>
+              <Box>
+                <Typography variant="body2" fontWeight={500}>
+                  Low stock alert: Salt
+                </Typography>
+                <Typography variant="caption" color="text.secondary">
+                  2 hours ago
+                </Typography>
+              </Box>
+            </MenuItem>
+            <Divider />
             
-            {/* Inventory Dropdown for Desktop */}
-            <Box sx={{ position: 'relative', display: 'inline-block' }}>
-              <Button 
-                color="inherit"
-                aria-controls="inventory-menu"
-                aria-haspopup="true"
-                onClick={handleInventoryMenu} 
-                endIcon={<ArrowDropDownIcon />}
-                sx={{ 
-                  mx: 1,
-                  fontSize: '0.95rem',
-                  fontWeight: 500,
-                  '&:hover': {
-                    bgcolor: 'transparent',
-                    color: 'primary.main'
-                  }
-                }}
-              >
-                Inventory
-              </Button>
-              <Menu
-                id="inventory-menu"
-                anchorEl={inventoryMenuAnchorEl}
-                keepMounted
-                open={Boolean(inventoryMenuAnchorEl)}
-                onClose={handleInventoryMenuClose}
-                anchorOrigin={{
-                  vertical: 'bottom',
-                  horizontal: 'left',
-                }}
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'left',
-                }}
-                PaperProps={{
-                  sx: {
-                    mt: 1,
-                    borderRadius: 2,
-                    boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
-                    border: '1px solid',
-                    borderColor: 'divider',
-                    minWidth: 200
-                  }
-                }}
-              >
-                <MenuItem 
-                  component={RouterLink} 
-                  to="/inventory" 
-                  onClick={handleInventoryMenuClose}
-                  sx={{ py: 1.5 }}
-                >
-                  <InventoryIcon fontSize="small" sx={{ mr: 1.5, color: 'text.secondary' }} />
-                  Inventory Items
-                </MenuItem>
-                <MenuItem 
-                  component={RouterLink} 
-                  to="/inventory/take" 
-                  onClick={handleInventoryMenuClose}
-                  sx={{ py: 1.5 }}
-                >
-                  <CheckBoxIcon fontSize="small" sx={{ mr: 1.5, color: 'text.secondary' }} />
-                  Take Inventory
-                </MenuItem>
-                <MenuItem 
-                  component={RouterLink} 
-                  to="/inventory/locations" 
-                  onClick={handleInventoryMenuClose}
-                  sx={{ py: 1.5 }}
-                >
-                  <LocationOnIcon fontSize="small" sx={{ mr: 1.5, color: 'text.secondary' }} />
-                  Manage Locations
-                </MenuItem>
-              </Menu>
-            </Box>
+            <MenuItem sx={{ py: 2 }}>
+              <Box>
+                <Typography variant="body2" fontWeight={500}>
+                  New recipe added by John
+                </Typography>
+                <Typography variant="caption" color="text.secondary">
+                  Yesterday
+                </Typography>
+              </Box>
+            </MenuItem>
+            <Divider />
             
-            <Button 
-              color="inherit" 
-              component={RouterLink} 
-              to="/suppliers"
-              sx={{ 
-                mx: 1,
-                fontSize: '0.95rem',
-                fontWeight: 500,
-                '&:hover': {
-                  bgcolor: 'transparent',
-                  color: 'primary.main'
-                }
-              }}
-            >
-              Suppliers
-            </Button>
-            <Button 
-              color="inherit" 
-              component={RouterLink} 
-              to="/recipes"
-              sx={{ 
-                mx: 1,
-                fontSize: '0.95rem',
-                fontWeight: 500,
-                '&:hover': {
-                  bgcolor: 'transparent',
-                  color: 'primary.main'
-                }
-              }}
-            >
-              Recipes
-            </Button>
-            <Button 
-              color="inherit" 
-              component={RouterLink} 
-              to="/about"
-              sx={{ 
-                mx: 1,
-                fontSize: '0.95rem',
-                fontWeight: 500,
-                '&:hover': {
-                  bgcolor: 'transparent',
-                  color: 'primary.main'
-                }
-              }}
-            >
-              About
-            </Button>
+            <MenuItem sx={{ py: 2 }}>
+              <Box>
+                <Typography variant="body2" fontWeight={500}>
+                  Supplier order confirmed
+                </Typography>
+                <Typography variant="caption" color="text.secondary">
+                  3 days ago
+                </Typography>
+              </Box>
+            </MenuItem>
           </Box>
           
-          <Box sx={{ ml: 3 }}>
-            <Tooltip title="Account settings">
-              <IconButton onClick={handleMenu} sx={{ p: 0, ml: 1 }}>
-                <Avatar sx={{ 
-                  width: 38, 
-                  height: 38, 
-                  bgcolor: 'secondary.main',
-                  fontWeight: 600,
-                  fontSize: '0.9rem'
-                }}>
-                  {getUserInitials()}
-                </Avatar>
-              </IconButton>
-            </Tooltip>
-            <Menu
-              sx={{ mt: 1 }}
-              id="menu-appbar"
-              anchorEl={anchorEl}
-              anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'right',
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              open={Boolean(anchorEl)}
-              onClose={handleClose}
-              PaperProps={{
-                sx: {
-                  borderRadius: 2,
-                  boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
-                  border: '1px solid',
-                  borderColor: 'divider',
-                  minWidth: 180
-                }
-              }}
-            >
-              <MenuItem component={RouterLink} to="/profile" onClick={handleClose} sx={{ py: 1.5 }}>
-                Profile
-              </MenuItem>
-              <MenuItem component={RouterLink} to="/settings" onClick={handleClose} sx={{ py: 1.5 }}>
-                Settings
-              </MenuItem>
-              <Divider sx={{ my: 1 }} />
-              <MenuItem onClick={onLogout} sx={{ py: 1.5 }}>Logout</MenuItem>
-            </Menu>
+          <Divider />
+          <Box sx={{ display: 'flex', justifyContent: 'center', p: 1 }}>
+            <Button size="small" sx={{ width: '100%' }}>
+              View All
+            </Button>
           </Box>
-        </Fragment>
-      )}
+        </Menu>
+
+        {/* User Avatar & Menu */}
+        <Tooltip title="Account">
+          <Box onClick={handleUserMenu} sx={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+            <UserAvatar>{getUserInitials()}</UserAvatar>
+            {!isSmall && (
+              <Box sx={{ ml: 1, display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                <Typography variant="body2" fontWeight={600} lineHeight={1.2}>
+                  {user?.name || 'User'}
+                </Typography>
+                <Typography variant="caption" color="text.secondary" lineHeight={1.2}>
+                  {user?.role === 'admin' ? 'Administrator' : 'Chef'}
+                </Typography>
+              </Box>
+            )}
+          </Box>
+        </Tooltip>
+        
+        <Menu
+          anchorEl={userMenuAnchor}
+          open={Boolean(userMenuAnchor)}
+          onClose={closeUserMenu}
+          PaperProps={{
+            sx: {
+              mt: 1.5,
+              borderRadius: 2,
+              minWidth: 200,
+              boxShadow: '0 10px 40px rgba(0,0,0,0.1)',
+              border: '1px solid',
+              borderColor: 'divider',
+            },
+          }}
+          transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+          anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+        >
+          <Box sx={{ px: 2, py: 1.5 }}>
+            <Typography variant="subtitle2" fontWeight={600} noWrap>
+              {user?.name || 'User'}
+            </Typography>
+            <Typography variant="caption" color="text.secondary" noWrap>
+              {user?.email || 'user@example.com'}
+            </Typography>
+          </Box>
+          <Divider />
+          <MenuItem component={RouterLink} to="/profile" onClick={closeUserMenu} sx={{ py: 1.5 }}>
+            <ListItemIcon>
+              <AccountCircle fontSize="small" />
+            </ListItemIcon>
+            Profile
+          </MenuItem>
+          <MenuItem component={RouterLink} to="/settings" onClick={closeUserMenu} sx={{ py: 1.5 }}>
+            <ListItemIcon>
+              <SettingsIcon fontSize="small" />
+            </ListItemIcon>
+            Settings
+          </MenuItem>
+          <Divider />
+          <MenuItem onClick={onLogout} sx={{ py: 1.5 }}>
+            <ListItemIcon>
+              <LogoutIcon fontSize="small" />
+            </ListItemIcon>
+            Logout
+          </MenuItem>
+        </Menu>
+      </Box>
+
+      {/* Mobile Drawer */}
+      <Drawer
+        anchor="left"
+        open={drawerOpen}
+        onClose={handleDrawerToggle}
+        PaperProps={{
+          sx: {
+            width: 280,
+            borderRadius: '0 16px 16px 0',
+            px: 2,
+            py: 2
+          }
+        }}
+      >
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+          <BrandLogo variant="h6">
+            <RestaurantMenuIcon />
+            Recipify
+          </BrandLogo>
+          <IconButton onClick={handleDrawerToggle}>
+            <CloseIcon />
+          </IconButton>
+        </Box>
+        
+        <Divider sx={{ mb: 2 }} />
+        
+        {user && (
+          <Box sx={{ mb: 3, px: 1 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+              <UserAvatar sx={{ width: 42, height: 42, mr: 1.5 }}>{getUserInitials()}</UserAvatar>
+              <Box>
+                <Typography variant="subtitle2" fontWeight={600}>
+                  {user.name}
+                </Typography>
+                <Typography variant="caption" color="text.secondary">
+                  {user.email}
+                </Typography>
+              </Box>
+            </Box>
+          </Box>
+        )}
+        
+        <List component="nav" sx={{ mb: 2 }}>
+          <MobileNavItem
+            component={RouterLink}
+            to="/dashboard"
+            active={isActive('/dashboard') ? 1 : 0}
+          >
+            <ListItemIcon>
+              <DashboardIcon />
+            </ListItemIcon>
+            <ListItemText primary="Dashboard" />
+          </MobileNavItem>
+          
+          <MobileNavItem
+            component={RouterLink}
+            to="/recipes"
+            active={isActive('/recipes') ? 1 : 0}
+          >
+            <ListItemIcon>
+              <RestaurantMenuIcon />
+            </ListItemIcon>
+            <ListItemText primary="Recipes" />
+          </MobileNavItem>
+          
+          <MobileNavItem
+            onClick={handleInventoryToggle}
+            active={isActive('/inventory') ? 1 : 0}
+          >
+            <ListItemIcon>
+              <InventoryIcon />
+            </ListItemIcon>
+            <ListItemText primary="Inventory" />
+            {inventoryOpen ? <ExpandLess /> : <ExpandMore />}
+          </MobileNavItem>
+          
+          <Collapse in={inventoryOpen} timeout="auto" unmountOnExit>
+            <List component="div" disablePadding>
+              <MobileNavItem
+                component={RouterLink}
+                to="/inventory"
+                active={location.pathname === '/inventory' ? 1 : 0}
+                sx={{ pl: 4 }}
+              >
+                <ListItemIcon>
+                  <InventoryIcon fontSize="small" />
+                </ListItemIcon>
+                <ListItemText primary="All Items" />
+              </MobileNavItem>
+              
+              <MobileNavItem
+                component={RouterLink}
+                to="/inventory/take"
+                active={location.pathname === '/inventory/take' ? 1 : 0}
+                sx={{ pl: 4 }}
+              >
+                <ListItemIcon>
+                  <CheckBoxIcon fontSize="small" />
+                </ListItemIcon>
+                <ListItemText primary="Take Inventory" />
+              </MobileNavItem>
+              
+              <MobileNavItem
+                component={RouterLink}
+                to="/inventory/locations"
+                active={location.pathname === '/inventory/locations' ? 1 : 0}
+                sx={{ pl: 4 }}
+              >
+                <ListItemIcon>
+                  <LocationOnIcon fontSize="small" />
+                </ListItemIcon>
+                <ListItemText primary="Locations" />
+              </MobileNavItem>
+            </List>
+          </Collapse>
+          
+          <MobileNavItem
+            component={RouterLink}
+            to="/suppliers"
+            active={isActive('/suppliers') ? 1 : 0}
+          >
+            <ListItemIcon>
+              <LocalShippingIcon />
+            </ListItemIcon>
+            <ListItemText primary="Suppliers" />
+          </MobileNavItem>
+          
+          <Divider sx={{ my: 1.5 }} />
+          
+          <MobileNavItem
+            component={RouterLink}
+            to="/settings"
+            active={isActive('/settings') ? 1 : 0}
+          >
+            <ListItemIcon>
+              <SettingsIcon />
+            </ListItemIcon>
+            <ListItemText primary="Settings" />
+          </MobileNavItem>
+          
+          <MobileNavItem
+            component={RouterLink}
+            to="/about"
+            active={isActive('/about') ? 1 : 0}
+          >
+            <ListItemIcon>
+              <InfoIcon />
+            </ListItemIcon>
+            <ListItemText primary="About" />
+          </MobileNavItem>
+          
+          <MobileNavItem onClick={onLogout}>
+            <ListItemIcon>
+              <LogoutIcon />
+            </ListItemIcon>
+            <ListItemText primary="Logout" />
+          </MobileNavItem>
+        </List>
+      </Drawer>
     </Fragment>
   );
 
   const guestLinks = (
     <Fragment>
-      <Button 
-        color="inherit" 
-        component={RouterLink} 
-        to="/login"
-        variant="text"
-        sx={{ 
-          mx: 1,
-          fontSize: '0.95rem',
-          fontWeight: 500,
-          '&:hover': {
-            bgcolor: 'transparent',
-            color: 'primary.main'
-          }
-        }}
-      >
-        Login
-      </Button>
-      <Button 
-        variant="contained"
-        color="primary" 
-        component={RouterLink} 
-        to="/register"
-        sx={{ 
-          ml: 2,
-          borderRadius: 2,
-          px: 3
-        }}
-      >
+      <NavItem component={RouterLink} to="/register" disableRipple>
         Register
-      </Button>
+      </NavItem>
+      <NavItem component={RouterLink} to="/login" disableRipple>
+        Login
+      </NavItem>
     </Fragment>
   );
 
   return (
-    <AppBar 
-      position="static" 
-      elevation={0}
-      sx={{
-        borderBottom: '1px solid',
-        borderColor: 'divider',
-        bgcolor: 'background.paper',
-        color: 'text.primary'
-      }}
-    >
-      <Container maxWidth="xl">
-        <Toolbar 
-          disableGutters 
-          sx={{ 
-            py: 2,
-            px: { xs: 1, sm: 2 }
-          }}
-        >
-          <Typography
-            variant="h5"
-            noWrap
-            component={RouterLink}
-            to="/"
-            sx={{
-              fontWeight: 700,
-              letterSpacing: '0.05em',
-              color: 'inherit',
-              textDecoration: 'none',
-              display: 'flex',
-              alignItems: 'center',
-              '&:hover': {
-                color: 'primary.main'
-              }
-            }}
-          >
-            <RestaurantMenuIcon sx={{ mr: 1.5, fontSize: 28 }} />
-            RECIPIFY
-          </Typography>
+    <StyledAppBar position="sticky" color="default">
+      <Container maxWidth="xl" disableGutters>
+        <Toolbar sx={{ px: { xs: 1, sm: 2 } }}>
+          <BrandLogo variant="h6" component={RouterLink} to="/" sx={{ textDecoration: 'none' }}>
+            <RestaurantMenuIcon />
+            Recipify
+          </BrandLogo>
           
-          <Box sx={{ flexGrow: 1 }} />
-          
-          {isAuthenticated ? authLinks : guestLinks}
-          
-          <Tooltip title="Toggle theme">
-            <IconButton color="inherit" sx={{ ml: 1 }}>
-              <LightModeIcon />
-            </IconButton>
-          </Tooltip>
+          <Box sx={{ ml: { xs: 1, md: 4 }, flexGrow: 1, display: 'flex' }}>
+            {isAuthenticated ? authLinks : guestLinks}
+          </Box>
         </Toolbar>
       </Container>
-    </AppBar>
+    </StyledAppBar>
   );
 };
 

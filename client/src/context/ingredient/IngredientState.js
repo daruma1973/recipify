@@ -7,6 +7,7 @@ import {
   GET_INGREDIENT,
   ADD_INGREDIENT,
   DELETE_INGREDIENT,
+  DELETE_ALL_INGREDIENTS,
   UPDATE_INGREDIENT,
   CLEAR_INGREDIENTS,
   FILTER_INGREDIENTS,
@@ -167,6 +168,24 @@ const IngredientState = props => {
   // Set Loading
   const setLoading = () => dispatch({ type: SET_LOADING });
 
+  // Delete All Ingredients
+  const deleteAllIngredients = async () => {
+    try {
+      dispatch({ type: SET_LOADING });
+      
+      await axios.delete('/api/inventory/all');
+      
+      dispatch({
+        type: DELETE_ALL_INGREDIENTS
+      });
+    } catch (err) {
+      dispatch({
+        type: INGREDIENT_ERROR,
+        payload: err.response?.data?.msg || 'Error deleting all ingredients'
+      });
+    }
+  };
+
   return (
     <IngredientContext.Provider
       value={{
@@ -179,6 +198,7 @@ const IngredientState = props => {
         getIngredient,
         addIngredient,
         deleteIngredient,
+        deleteAllIngredients,
         updateIngredient,
         clearIngredients,
         setCurrent,
