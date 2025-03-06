@@ -768,6 +768,7 @@ const Ingredients = () => {
     currentIngredients.every(i => selected.includes(i._id));
 
   // Define columns for each tab
+  // Rearranged tab order to put Product Format next to All Products
   const tabColumns = {
     0: [ // All Products tab
       { id: 'product', label: 'Product Name', align: 'left' },
