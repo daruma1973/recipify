@@ -95,9 +95,11 @@ const App = () => {
             <Container maxWidth="xl">
               <Alerts />
               <Routes>
+                <Route path="/" element={<Landing />} />
                 <Route path="/about" element={<About />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/login" element={<Login />} />
+                <Route path="/dashboard" element={<PrivateRoute component={Dashboard} />} />
                 <Route path="/inventory" element={<PrivateRoute component={Ingredients} />} />
                 <Route path="/inventory/add" element={<PrivateRoute component={IngredientForm} />} />
                 <Route path="/inventory/:id" element={<PrivateRoute component={IngredientDetail} />} />
@@ -111,14 +113,12 @@ const App = () => {
                 <Route path="/recipes/edit/:id" element={<PrivateRoute component={RecipeForm} />} />
                 <Route path="/recipes/import" element={<PrivateRoute component={RecipeImport} />} />
                 <Route path="/recipes/:id" element={<PrivateRoute component={RecipeDetail} />} />
-                <Route path="/dashboard" element={<PrivateRoute component={Dashboard} />} />
                 <Route path="/settings" element={<PrivateRoute component={Settings} />} />
                 <Route path="/profile" element={<PrivateRoute component={Profile} />} />
                 <Route path="/reset-products" element={<PrivateRoute component={ResetProducts} />} />
                 <Route path="/new-product-system" element={<PrivateRoute component={NewProductSystem} />} />
                 <Route path="/product-system-reset" element={<PrivateRoute component={ProductSystemReset} />} />
-                <Route path="/" element={<Landing />} />
-                <Route path="/*" element={<NotFound />} />
+                <Route path="*" element={<NotFound />} />
               </Routes>
             </Container>
           </Fragment>

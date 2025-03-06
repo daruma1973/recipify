@@ -250,6 +250,7 @@ router.post(
       code,
       supplier,
       category,
+      productFamily,
       subCategory,
       class: itemClass,
       cost,
@@ -262,7 +263,17 @@ router.post(
       allergens,
       description,
       notes,
-      image
+      image,
+      abvPercent,
+      region,
+      producer,
+      rawMaterial,
+      vintage,
+      appellation,
+      packagingType,
+      upc,
+      lowPar,
+      highPar
     } = req.body;
 
     try {
@@ -280,6 +291,7 @@ router.post(
         code,
         supplier,
         category,
+        productFamily,
         subCategory,
         class: itemClass,
         cost,
@@ -288,6 +300,12 @@ router.post(
         netWeight,
         packSize,
         taxValue,
+        abvPercent,
+        region,
+        producer,
+        rawMaterial,
+        vintage,
+        appellation,
         nutritionalInfo: nutritionalInfo || {
           energy: 0,
           protein: 0,
@@ -317,6 +335,10 @@ router.post(
         description,
         notes,
         image,
+        packagingType,
+        upc,
+        lowPar,
+        highPar,
         user: req.user.id
       });
 
@@ -339,6 +361,7 @@ router.put('/:id', auth, async (req, res) => {
     code,
     supplier,
     category,
+    productFamily,
     subCategory,
     class: itemClass,
     cost,
@@ -352,7 +375,17 @@ router.put('/:id', auth, async (req, res) => {
     description,
     notes,
     image,
-    isActive
+    isActive,
+    abvPercent,
+    region,
+    producer,
+    rawMaterial,
+    vintage,
+    appellation,
+    packagingType,
+    upc,
+    lowPar,
+    highPar
   } = req.body;
 
   // Build ingredient object
@@ -360,8 +393,9 @@ router.put('/:id', auth, async (req, res) => {
   if (name) ingredientFields.name = name;
   if (code) ingredientFields.code = code;
   if (supplier) ingredientFields.supplier = supplier;
-  if (category) ingredientFields.category = category;
-  if (subCategory) ingredientFields.subCategory = subCategory;
+  if (category !== undefined) ingredientFields.category = category;
+  if (productFamily !== undefined) ingredientFields.productFamily = productFamily;
+  if (subCategory !== undefined) ingredientFields.subCategory = subCategory;
   if (itemClass) ingredientFields.class = itemClass;
   if (cost) ingredientFields.cost = cost;
   if (unitSize) ingredientFields.unitSize = unitSize;
@@ -369,6 +403,20 @@ router.put('/:id', auth, async (req, res) => {
   if (netWeight) ingredientFields.netWeight = netWeight;
   if (packSize) ingredientFields.packSize = packSize;
   if (taxValue) ingredientFields.taxValue = taxValue;
+  
+  // Add wine-related fields
+  if (abvPercent !== undefined) ingredientFields.abvPercent = abvPercent;
+  if (region !== undefined) ingredientFields.region = region;
+  if (producer !== undefined) ingredientFields.producer = producer;
+  if (rawMaterial !== undefined) ingredientFields.rawMaterial = rawMaterial;
+  if (vintage !== undefined) ingredientFields.vintage = vintage;
+  if (appellation !== undefined) ingredientFields.appellation = appellation;
+  
+  // Add product format fields
+  if (packagingType !== undefined) ingredientFields.packagingType = packagingType;
+  if (upc !== undefined) ingredientFields.upc = upc;
+  if (lowPar !== undefined) ingredientFields.lowPar = lowPar;
+  if (highPar !== undefined) ingredientFields.highPar = highPar;
   
   // Ensure nutritionalInfo is properly handled
   if (nutritionalInfo) {

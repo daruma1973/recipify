@@ -19,8 +19,48 @@ const IngredientSchema = new mongoose.Schema({
   category: {
     type: String
   },
+  productFamily: {
+    type: String
+  },
   subCategory: {
     type: String
+  },
+  // New wine-related fields
+  abvPercent: {
+    type: Number
+  },
+  region: {
+    type: String
+  },
+  producer: {
+    type: String
+  },
+  rawMaterial: {
+    type: String
+  },
+  vintage: {
+    type: String
+  },
+  appellation: {
+    type: String
+  },
+  unitSize: {
+    type: String
+  },
+  packagingType: {
+    type: String
+  },
+  upc: {
+    type: String
+  },
+  image: {
+    type: String
+  },
+  lowPar: {
+    type: Number
+  },
+  highPar: {
+    type: Number
   },
   class: {
     type: String,
@@ -29,10 +69,6 @@ const IngredientSchema = new mongoose.Schema({
   },
   // Cost and unit information
   cost: {
-    type: Number,
-    required: true
-  },
-  unitSize: {
     type: Number,
     required: true
   },
@@ -84,9 +120,6 @@ const IngredientSchema = new mongoose.Schema({
     type: String
   },
   notes: {
-    type: String
-  },
-  image: {
     type: String
   },
   isActive: {
