@@ -41,9 +41,10 @@ import InfoIcon from '@mui/icons-material/Info';
 import LogoutIcon from '@mui/icons-material/Logout';
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import NotificationsIcon from '@mui/icons-material/Notifications';
+import LocalBarIcon from '@mui/icons-material/LocalBar';
 
 const StyledAppBar = styled(AppBar)(({ theme }) => ({
-  backgroundColor: 'rgba(255, 255, 255, 0.9)',
+  backgroundColor: 'rgba(255, 255, 255, 0.95)',
   backdropFilter: 'blur(10px)',
   boxShadow: 'none',
   borderBottom: '1px solid',
@@ -69,16 +70,28 @@ const BrandLogo = styled(Typography)(({ theme }) => ({
 const NavItem = styled(Button)(({ theme, active }) => ({
   textTransform: 'none',
   fontSize: '0.95rem',
-  fontWeight: 500,
+  fontWeight: 600,
   color: active ? theme.palette.primary.main : theme.palette.text.primary,
   padding: theme.spacing(1, 1.5),
   borderRadius: theme.shape.borderRadius,
+  position: 'relative',
   '&:hover': {
-    backgroundColor: 'rgba(0, 0, 0, 0.03)',
+    backgroundColor: 'rgba(99, 102, 241, 0.04)',
     color: theme.palette.primary.main
   },
   ...(active && {
-    backgroundColor: 'rgba(0, 0, 0, 0.04)',
+    backgroundColor: 'rgba(99, 102, 241, 0.08)',
+    '&::after': {
+      content: '""',
+      position: 'absolute',
+      bottom: 0,
+      left: '50%',
+      transform: 'translateX(-50%)',
+      width: '30%',
+      height: '3px',
+      backgroundColor: theme.palette.primary.main,
+      borderRadius: '3px 3px 0 0',
+    }
   })
 }));
 
@@ -86,7 +99,7 @@ const MobileNavItem = styled(ListItemButton)(({ theme, active }) => ({
   borderRadius: theme.shape.borderRadius,
   marginBottom: 4,
   ...(active && {
-    backgroundColor: 'rgba(0, 0, 0, 0.04)',
+    backgroundColor: 'rgba(99, 102, 241, 0.08)',
     color: theme.palette.primary.main,
     '& .MuiListItemIcon-root': {
       color: theme.palette.primary.main,
@@ -101,12 +114,30 @@ const UserAvatar = styled(Avatar)(({ theme }) => ({
   fontSize: '0.9rem',
   fontWeight: 700,
   cursor: 'pointer',
-  transition: 'transform 0.2s ease',
+  transition: 'transform 0.2s ease, box-shadow 0.2s ease',
   border: '2px solid white',
   boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
   '&:hover': {
-    transform: 'scale(1.05)'
+    transform: 'scale(1.05)',
+    boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
   }
+}));
+
+const NotificationBadge = styled(Badge)(({ theme }) => ({
+  '& .MuiBadge-badge': {
+    backgroundColor: theme.palette.error.main,
+    color: theme.palette.error.contrastText,
+    fontWeight: 'bold',
+    boxShadow: '0 0 0 2px white',
+  }
+}));
+
+const DrawerHeader = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  padding: theme.spacing(2),
+  borderBottom: `1px solid ${theme.palette.divider}`,
 }));
 
 const Navbar = () => {
@@ -192,6 +223,7 @@ const Navbar = () => {
             to="/dashboard"
             active={isActive('/dashboard') ? 1 : 0}
             disableRipple
+            startIcon={<DashboardIcon />}
           >
             Dashboard
           </NavItem>
@@ -201,8 +233,9 @@ const Navbar = () => {
             to="/recipes"
             active={isActive('/recipes') ? 1 : 0}
             disableRipple
+            startIcon={<LocalBarIcon />}
           >
-            Recipes
+            Cocktails
           </NavItem>
           
           <NavItem 
@@ -210,8 +243,9 @@ const Navbar = () => {
             to="/inventory"
             active={isActive('/inventory') ? 1 : 0}
             disableRipple
+            startIcon={<InventoryIcon />}
           >
-            Inventory
+            Bar Stock
           </NavItem>
           
           <NavItem 
@@ -219,6 +253,7 @@ const Navbar = () => {
             to="/suppliers"
             active={isActive('/suppliers') ? 1 : 0}
             disableRipple
+            startIcon={<LocalShippingIcon />}
           >
             Suppliers
           </NavItem>
@@ -234,9 +269,9 @@ const Navbar = () => {
             color="inherit"
             sx={{ mr: 1, color: 'text.secondary' }}
           >
-            <Badge badgeContent={3} color="error">
+            <NotificationBadge badgeContent={3} color="error">
               <NotificationsIcon />
-            </Badge>
+            </NotificationBadge>
           </IconButton>
         </Tooltip>
         
@@ -249,99 +284,64 @@ const Navbar = () => {
               width: 320,
               maxWidth: '100%',
               mt: 1.5,
+              boxShadow: theme.shadows[3],
               borderRadius: 2,
-              boxShadow: '0 10px 40px rgba(0,0,0,0.1)',
-              border: '1px solid',
-              borderColor: 'divider',
-              overflow: 'visible',
-              '&:before': {
-                content: '""',
-                display: 'block',
-                position: 'absolute',
-                top: 0,
-                right: 14,
-                width: 10,
-                height: 10,
-                bgcolor: 'background.paper',
-                transform: 'translateY(-50%) rotate(45deg)',
-                zIndex: 0,
-                borderTop: '1px solid',
-                borderLeft: '1px solid',
-                borderColor: 'divider',
-              },
-            },
+              '& .MuiList-root': {
+                p: 1,
+              }
+            }
           }}
           transformOrigin={{ horizontal: 'right', vertical: 'top' }}
           anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
         >
-          <Box sx={{ p: 2, pb: 1 }}>
-            <Typography variant="subtitle1" fontWeight={600}>
-              Notifications
-            </Typography>
-          </Box>
-          <Divider />
-          
-          {/* Example notifications */}
-          <Box sx={{ maxHeight: 320, overflow: 'auto' }}>
-            <MenuItem sx={{ py: 2 }}>
-              <Box>
-                <Typography variant="body2" fontWeight={500}>
-                  Low stock alert: Salt
-                </Typography>
-                <Typography variant="caption" color="text.secondary">
-                  2 hours ago
-                </Typography>
-              </Box>
-            </MenuItem>
-            <Divider />
-            
-            <MenuItem sx={{ py: 2 }}>
-              <Box>
-                <Typography variant="body2" fontWeight={500}>
-                  New recipe added by John
-                </Typography>
-                <Typography variant="caption" color="text.secondary">
-                  Yesterday
-                </Typography>
-              </Box>
-            </MenuItem>
-            <Divider />
-            
-            <MenuItem sx={{ py: 2 }}>
-              <Box>
-                <Typography variant="body2" fontWeight={500}>
-                  Supplier order confirmed
-                </Typography>
-                <Typography variant="caption" color="text.secondary">
-                  3 days ago
-                </Typography>
-              </Box>
-            </MenuItem>
+          <Box sx={{ p: 2, borderBottom: `1px solid ${theme.palette.divider}` }}>
+            <Typography variant="subtitle1" fontWeight={600}>Notifications</Typography>
           </Box>
           
-          <Divider />
-          <Box sx={{ display: 'flex', justifyContent: 'center', p: 1 }}>
-            <Button size="small" sx={{ width: '100%' }}>
-              View All
+          <MenuItem onClick={closeNotificationMenu} sx={{ borderRadius: 1, py: 1.5 }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+              <Typography variant="body2" fontWeight={600}>Low stock alert</Typography>
+              <Typography variant="caption" color="text.secondary">
+                Flour is running low (2kg remaining)
+              </Typography>
+            </Box>
+          </MenuItem>
+          
+          <MenuItem onClick={closeNotificationMenu} sx={{ borderRadius: 1, py: 1.5 }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+              <Typography variant="body2" fontWeight={600}>Order reminder</Typography>
+              <Typography variant="caption" color="text.secondary">
+                Place your weekly order with Supplier A
+              </Typography>
+            </Box>
+          </MenuItem>
+          
+          <MenuItem onClick={closeNotificationMenu} sx={{ borderRadius: 1, py: 1.5 }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+              <Typography variant="body2" fontWeight={600}>Recipe update</Typography>
+              <Typography variant="caption" color="text.secondary">
+                Chocolate Cake recipe was updated
+              </Typography>
+            </Box>
+          </MenuItem>
+          
+          <Box sx={{ p: 1, textAlign: 'center' }}>
+            <Button 
+              component={RouterLink} 
+              to="/notifications" 
+              size="small" 
+              sx={{ width: '100%', borderRadius: 1 }}
+            >
+              View all notifications
             </Button>
           </Box>
         </Menu>
 
         {/* User Avatar & Menu */}
-        <Tooltip title="Account">
-          <Box onClick={handleUserMenu} sx={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
-            <UserAvatar>{getUserInitials()}</UserAvatar>
-            {!isSmall && (
-              <Box sx={{ ml: 1, display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-                <Typography variant="body2" fontWeight={600} lineHeight={1.2}>
-                  {user?.name || 'User'}
-                </Typography>
-                <Typography variant="caption" color="text.secondary" lineHeight={1.2}>
-                  {user?.role === 'admin' ? 'Administrator' : 'Chef'}
-                </Typography>
-              </Box>
-            )}
-          </Box>
+        <Tooltip title={user?.name || 'Account'}>
+          <UserAvatar onClick={handleUserMenu}>
+            {getUserInitials()}
+          </UserAvatar>
         </Tooltip>
         
         <Menu
@@ -350,98 +350,116 @@ const Navbar = () => {
           onClose={closeUserMenu}
           PaperProps={{
             sx: {
+              width: 220,
+              maxWidth: '100%',
               mt: 1.5,
+              boxShadow: theme.shadows[3],
               borderRadius: 2,
-              minWidth: 200,
-              boxShadow: '0 10px 40px rgba(0,0,0,0.1)',
-              border: '1px solid',
-              borderColor: 'divider',
-            },
+              '& .MuiList-root': {
+                p: 1,
+              }
+            }
           }}
           transformOrigin={{ horizontal: 'right', vertical: 'top' }}
           anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
         >
           <Box sx={{ px: 2, py: 1.5 }}>
-            <Typography variant="subtitle2" fontWeight={600} noWrap>
+            <Typography variant="subtitle2" noWrap>
               {user?.name || 'User'}
             </Typography>
-            <Typography variant="caption" color="text.secondary" noWrap>
+            <Typography variant="body2" color="text.secondary" noWrap>
               {user?.email || 'user@example.com'}
             </Typography>
           </Box>
-          <Divider />
-          <MenuItem component={RouterLink} to="/profile" onClick={closeUserMenu} sx={{ py: 1.5 }}>
+          
+          <Divider sx={{ my: 1 }} />
+          
+          <MenuItem 
+            component={RouterLink} 
+            to="/profile" 
+            onClick={closeUserMenu}
+            sx={{ borderRadius: 1 }}
+          >
             <ListItemIcon>
               <AccountCircle fontSize="small" />
             </ListItemIcon>
-            Profile
+            <ListItemText primary="Profile" />
           </MenuItem>
-          <MenuItem component={RouterLink} to="/settings" onClick={closeUserMenu} sx={{ py: 1.5 }}>
+          
+          <MenuItem 
+            component={RouterLink} 
+            to="/settings" 
+            onClick={closeUserMenu}
+            sx={{ borderRadius: 1 }}
+          >
             <ListItemIcon>
               <SettingsIcon fontSize="small" />
             </ListItemIcon>
-            Settings
+            <ListItemText primary="Settings" />
           </MenuItem>
-          <Divider />
-          <MenuItem onClick={onLogout} sx={{ py: 1.5 }}>
+          
+          <Divider sx={{ my: 1 }} />
+          
+          <MenuItem 
+            onClick={onLogout}
+            sx={{ borderRadius: 1 }}
+          >
             <ListItemIcon>
               <LogoutIcon fontSize="small" />
             </ListItemIcon>
-            Logout
+            <ListItemText primary="Logout" />
           </MenuItem>
         </Menu>
       </Box>
+    </Fragment>
+  );
 
-      {/* Mobile Drawer */}
-      <Drawer
-        anchor="left"
-        open={drawerOpen}
-        onClose={handleDrawerToggle}
-        PaperProps={{
-          sx: {
-            width: 280,
-            borderRadius: '0 16px 16px 0',
-            px: 2,
-            py: 2
-          }
-        }}
-      >
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
-          <BrandLogo variant="h6">
-            <RestaurantMenuIcon />
-            Recipify
-          </BrandLogo>
-          <IconButton onClick={handleDrawerToggle}>
-            <CloseIcon />
-          </IconButton>
-        </Box>
-        
-        <Divider sx={{ mb: 2 }} />
-        
-        {user && (
-          <Box sx={{ mb: 3, px: 1 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-              <UserAvatar sx={{ width: 42, height: 42, mr: 1.5 }}>{getUserInitials()}</UserAvatar>
-              <Box>
-                <Typography variant="subtitle2" fontWeight={600}>
-                  {user.name}
-                </Typography>
-                <Typography variant="caption" color="text.secondary">
-                  {user.email}
-                </Typography>
-              </Box>
-            </Box>
-          </Box>
-        )}
-        
-        <List component="nav" sx={{ mb: 2 }}>
+  const guestLinks = (
+    <Fragment>
+      <Box sx={{ display: 'flex', gap: 1, ml: 'auto' }}>
+        <Button 
+          component={RouterLink} 
+          to="/login" 
+          variant="outlined" 
+          color="primary"
+          sx={{ fontWeight: 600 }}
+        >
+          Login
+        </Button>
+        <Button 
+          component={RouterLink} 
+          to="/register" 
+          variant="contained" 
+          color="primary"
+          sx={{ fontWeight: 600 }}
+        >
+          Register
+        </Button>
+      </Box>
+    </Fragment>
+  );
+
+  // Mobile drawer content
+  const drawerContent = (
+    <Box sx={{ width: 280, height: '100%', display: 'flex', flexDirection: 'column' }}>
+      <DrawerHeader>
+        <BrandLogo variant="h6">
+          Recipify
+        </BrandLogo>
+        <IconButton onClick={handleDrawerToggle}>
+          <CloseIcon />
+        </IconButton>
+      </DrawerHeader>
+      
+      <Box sx={{ flexGrow: 1, p: 2, overflowY: 'auto' }}>
+        <List component="nav" sx={{ width: '100%' }}>
           <MobileNavItem
             component={RouterLink}
             to="/dashboard"
             active={isActive('/dashboard') ? 1 : 0}
           >
             <ListItemIcon>
-              <DashboardIcon />
+              <DashboardIcon color={isActive('/dashboard') ? 'primary' : 'inherit'} />
             </ListItemIcon>
             <ListItemText primary="Dashboard" />
           </MobileNavItem>
@@ -452,9 +470,9 @@ const Navbar = () => {
             active={isActive('/recipes') ? 1 : 0}
           >
             <ListItemIcon>
-              <RestaurantMenuIcon />
+              <LocalBarIcon color={isActive('/recipes') ? 'primary' : 'inherit'} />
             </ListItemIcon>
-            <ListItemText primary="Recipes" />
+            <ListItemText primary="Cocktails" />
           </MobileNavItem>
           
           <MobileNavItem
@@ -462,9 +480,9 @@ const Navbar = () => {
             active={isActive('/inventory') ? 1 : 0}
           >
             <ListItemIcon>
-              <InventoryIcon />
+              <InventoryIcon color={isActive('/inventory') ? 'primary' : 'inherit'} />
             </ListItemIcon>
-            <ListItemText primary="Inventory" />
+            <ListItemText primary="Bar Stock" />
             {inventoryOpen ? <ExpandLess /> : <ExpandMore />}
           </MobileNavItem>
           
@@ -473,20 +491,20 @@ const Navbar = () => {
               <MobileNavItem
                 component={RouterLink}
                 to="/inventory"
-                active={location.pathname === '/inventory' ? 1 : 0}
                 sx={{ pl: 4 }}
+                active={location.pathname === '/inventory' ? 1 : 0}
               >
                 <ListItemIcon>
                   <InventoryIcon fontSize="small" />
                 </ListItemIcon>
-                <ListItemText primary="All Items" />
+                <ListItemText primary="All Products" />
               </MobileNavItem>
               
               <MobileNavItem
                 component={RouterLink}
                 to="/inventory/take"
-                active={location.pathname === '/inventory/take' ? 1 : 0}
                 sx={{ pl: 4 }}
+                active={location.pathname === '/inventory/take' ? 1 : 0}
               >
                 <ListItemIcon>
                   <CheckBoxIcon fontSize="small" />
@@ -497,8 +515,8 @@ const Navbar = () => {
               <MobileNavItem
                 component={RouterLink}
                 to="/inventory/locations"
-                active={location.pathname === '/inventory/locations' ? 1 : 0}
                 sx={{ pl: 4 }}
+                active={location.pathname === '/inventory/locations' ? 1 : 0}
               >
                 <ListItemIcon>
                   <LocationOnIcon fontSize="small" />
@@ -514,12 +532,12 @@ const Navbar = () => {
             active={isActive('/suppliers') ? 1 : 0}
           >
             <ListItemIcon>
-              <LocalShippingIcon />
+              <LocalShippingIcon color={isActive('/suppliers') ? 'primary' : 'inherit'} />
             </ListItemIcon>
             <ListItemText primary="Suppliers" />
           </MobileNavItem>
           
-          <Divider sx={{ my: 1.5 }} />
+          <Divider sx={{ my: 2 }} />
           
           <MobileNavItem
             component={RouterLink}
@@ -527,7 +545,7 @@ const Navbar = () => {
             active={isActive('/settings') ? 1 : 0}
           >
             <ListItemIcon>
-              <SettingsIcon />
+              <SettingsIcon color={isActive('/settings') ? 'primary' : 'inherit'} />
             </ListItemIcon>
             <ListItemText primary="Settings" />
           </MobileNavItem>
@@ -538,48 +556,60 @@ const Navbar = () => {
             active={isActive('/about') ? 1 : 0}
           >
             <ListItemIcon>
-              <InfoIcon />
+              <InfoIcon color={isActive('/about') ? 'primary' : 'inherit'} />
             </ListItemIcon>
             <ListItemText primary="About" />
           </MobileNavItem>
-          
-          <MobileNavItem onClick={onLogout}>
-            <ListItemIcon>
-              <LogoutIcon />
-            </ListItemIcon>
-            <ListItemText primary="Logout" />
-          </MobileNavItem>
         </List>
-      </Drawer>
-    </Fragment>
-  );
-
-  const guestLinks = (
-    <Fragment>
-      <NavItem component={RouterLink} to="/register" disableRipple>
-        Register
-      </NavItem>
-      <NavItem component={RouterLink} to="/login" disableRipple>
-        Login
-      </NavItem>
-    </Fragment>
+      </Box>
+      
+      {isAuthenticated && (
+        <Box sx={{ p: 2, borderTop: `1px solid ${theme.palette.divider}` }}>
+          <Button
+            fullWidth
+            variant="outlined"
+            color="primary"
+            startIcon={<LogoutIcon />}
+            onClick={onLogout}
+          >
+            Logout
+          </Button>
+        </Box>
+      )}
+    </Box>
   );
 
   return (
-    <StyledAppBar position="sticky" color="default">
-      <Container maxWidth="xl" disableGutters>
-        <Toolbar sx={{ px: { xs: 1, sm: 2 } }}>
-          <BrandLogo variant="h6" component={RouterLink} to="/" sx={{ textDecoration: 'none' }}>
-            <RestaurantMenuIcon />
-            Recipify
-          </BrandLogo>
-          
-          <Box sx={{ ml: { xs: 1, md: 4 }, flexGrow: 1, display: 'flex' }}>
+    <Fragment>
+      <StyledAppBar position="sticky">
+        <Container maxWidth="xl">
+          <Toolbar disableGutters sx={{ height: 70 }}>
+            <BrandLogo variant="h6" component={RouterLink} to="/" sx={{ textDecoration: 'none', mr: 3 }}>
+              Recipify
+            </BrandLogo>
+            
             {isAuthenticated ? authLinks : guestLinks}
-          </Box>
-        </Toolbar>
-      </Container>
-    </StyledAppBar>
+          </Toolbar>
+        </Container>
+      </StyledAppBar>
+      
+      {/* Mobile Navigation Drawer */}
+      <Drawer
+        anchor="left"
+        open={drawerOpen}
+        onClose={handleDrawerToggle}
+        ModalProps={{ keepMounted: true }}
+        PaperProps={{ 
+          sx: { 
+            width: 280,
+            borderTopRightRadius: 16,
+            borderBottomRightRadius: 16,
+          } 
+        }}
+      >
+        {drawerContent}
+      </Drawer>
+    </Fragment>
   );
 };
 

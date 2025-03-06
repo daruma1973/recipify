@@ -35,7 +35,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SearchIcon from '@mui/icons-material/Search';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import RestaurantIcon from '@mui/icons-material/Restaurant';
+import LocalBarIcon from '@mui/icons-material/LocalBar';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import PeopleIcon from '@mui/icons-material/People';
 import ImportExportIcon from '@mui/icons-material/ImportExport';
@@ -46,6 +46,8 @@ import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import StarIcon from '@mui/icons-material/Star';
 import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
+import WineBarIcon from '@mui/icons-material/WineBar';
+import LiquorIcon from '@mui/icons-material/Liquor';
 
 import AuthContext from '../../context/auth/authContext';
 import RecipeContext from '../../context/recipe/recipeContext';
@@ -181,7 +183,7 @@ const RecipeMetric = styled(Box)(({ theme }) => ({
 }));
 
 // Default image for recipes
-const defaultImage = 'https://images.unsplash.com/photo-1495195134817-aeb325a55b65?ixlib=rb-1.2.1&auto=format&fit=crop&w=1955&q=80';
+const defaultImage = 'https://images.unsplash.com/photo-1551024709-8f23befc6f87?ixlib=rb-1.2.1&auto=format&fit=crop&w=1955&q=80';
 
 // Random colors for recipes without images
 const randomColors = [
@@ -220,23 +222,23 @@ const Recipes = () => {
   const [confirmDelete, setConfirmDelete] = useState(null);
   const [openFilters, setOpenFilters] = useState(false);
 
-  // Predefined categories for recipes
+  // Predefined categories for cocktails
   const categories = [
-    'Appetizer',
-    'Main Course',
-    'Side Dish',
-    'Dessert',
-    'Beverage',
-    'Breakfast',
-    'Lunch',
-    'Dinner',
-    'Snack',
-    'Bakery'
+    'Signature',
+    'Classic',
+    'Martini',
+    'Highball',
+    'Sour',
+    'Tiki',
+    'Spirit-Forward',
+    'Low-ABV',
+    'Non-Alcoholic',
+    'Seasonal'
   ];
 
   // Load user data and recipes when component mounts
   useEffect(() => {
-    console.log('Recipes component: Loading recipes');
+    console.log('Recipes component: Loading cocktails');
     getRecipes();
     // eslint-disable-next-line
   }, []);
@@ -279,7 +281,7 @@ const Recipes = () => {
   const handleConfirmDelete = () => {
     if (confirmDelete) {
       deleteRecipe(confirmDelete);
-      setAlert('Recipe deleted successfully', 'success');
+      setAlert('Cocktail deleted successfully', 'success');
       setConfirmDelete(null);
     }
   };
@@ -313,7 +315,7 @@ const Recipes = () => {
         <Box mb={4} mt={2} sx={{ position: 'relative', zIndex: 2 }}>
           <Box display="flex" justifyContent="space-between" alignItems="center" flexWrap="wrap" gap={2}>
             <Typography variant="h3" fontWeight={800}>
-              Recipe Collection
+              Cocktail Collection
             </Typography>
             
             <Box display="flex" gap={2}>
@@ -324,7 +326,7 @@ const Recipes = () => {
                 component={Link}
                 to="/recipes/add"
               >
-                Add Recipe
+                Add Cocktail
               </ActionButton>
               
               <ActionButton
@@ -340,7 +342,7 @@ const Recipes = () => {
           </Box>
           
           <Typography variant="subtitle1" color="text.secondary" mt={1}>
-            Browse, search and manage your recipes
+            Browse, search and manage your signature cocktails and drinks
           </Typography>
         </Box>
         
@@ -357,7 +359,7 @@ const Recipes = () => {
           }}
         >
           <SearchField
-            placeholder="Search recipes..."
+            placeholder="Search cocktails..."
             variant="outlined"
             fullWidth
             value={search}
@@ -425,10 +427,10 @@ const Recipes = () => {
           </Box>
         ) : filteredRecipes.length === 0 ? (
           <BentoCard
-            title="No recipes found"
-            subtitle={search || category ? 'Try adjusting your search or filters' : 'Start by adding your first recipe'}
+            title="No cocktails found"
+            subtitle={search || category ? 'Try adjusting your search or filters' : 'Start by adding your first cocktail recipe'}
             colorVariant="blue"
-            avatar={<RestaurantIcon />}
+            avatar={<LocalBarIcon />}
             avatarBg="primary.main"
             sx={{ 
               p: 4, 
@@ -448,7 +450,7 @@ const Recipes = () => {
                 size="large"
                 sx={{ mt: 2, mr: 2 }}
               >
-                Add Recipe
+                Add Cocktail
               </ActionButton>
               <ActionButton
                 variant="outlined"
@@ -459,13 +461,13 @@ const Recipes = () => {
                 size="large"
                 sx={{ mt: 2 }}
               >
-                Import Recipe
+                Import Cocktail
               </ActionButton>
             </Box>
           </BentoCard>
         ) : (
           <>
-            {/* Featured Recipe - Display the first recipe in a special banner */}
+            {/* Featured Cocktail - Display the first recipe in a special banner */}
             {paginatedRecipes?.length > 0 && (
               <FeaturedRecipeBanner
                 sx={{
@@ -488,7 +490,7 @@ const Recipes = () => {
                     )}
                   </Box>
                   
-                  <Typography variant="h4" fontWeight={800} gutterBottom>
+                  <Typography variant="h3" fontWeight={800} gutterBottom>
                     {paginatedRecipes[0].name}
                   </Typography>
                   
@@ -509,7 +511,7 @@ const Recipes = () => {
                       to={`/recipes/${paginatedRecipes[0]._id}`}
                       sx={{ backdropFilter: 'blur(10px)', bgcolor: 'rgba(255,255,255,0.2)' }}
                     >
-                      View Recipe
+                      View Cocktail
                     </ActionButton>
                     
                     <IconButton
@@ -529,7 +531,7 @@ const Recipes = () => {
               </FeaturedRecipeBanner>
             )}
             
-            {/* Recipe Grid */}
+            {/* Cocktail Grid */}
             <Grid container spacing={3}>
               {paginatedRecipes.slice(1).map((recipe, index) => (
                 <Grid item xs={12} sm={6} md={4} lg={3} key={recipe._id}>
@@ -552,7 +554,7 @@ const Recipes = () => {
                           borderRadius: 3,
                         }}
                       >
-                        {!recipe.image && <RestaurantIcon sx={{ fontSize: 40 }} />}
+                        {!recipe.image && <LocalBarIcon sx={{ fontSize: 40 }} />}
                       </Avatar>
                       
                       {recipe.isFeatured && (
@@ -718,7 +720,7 @@ const Recipes = () => {
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            Are you sure you want to delete this recipe? This action cannot be undone.
+            Are you sure you want to delete this cocktail? This action cannot be undone.
           </DialogContentText>
         </DialogContent>
         <DialogActions sx={{ p: 2 }}>

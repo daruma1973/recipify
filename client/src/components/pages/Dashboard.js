@@ -17,7 +17,15 @@ import {
   Button,
   IconButton,
   LinearProgress,
-  Divider
+  Divider,
+  Card,
+  CardContent,
+  Paper,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemAvatar,
+  ListItemSecondaryAction
 } from '@mui/material';
 import Container from '../layout/Container';
 import BentoCard from '../common/BentoCard';
@@ -25,7 +33,7 @@ import BentoCard from '../common/BentoCard';
 // Icons
 import AddIcon from '@mui/icons-material/Add';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
-import RestaurantIcon from '@mui/icons-material/Restaurant';
+import LocalBarIcon from '@mui/icons-material/LocalBar';
 import InventoryIcon from '@mui/icons-material/Inventory';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
@@ -40,6 +48,11 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import TimelineIcon from '@mui/icons-material/Timeline';
 import WarningIcon from '@mui/icons-material/Warning';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import EditIcon from '@mui/icons-material/Edit';
+import LiquorIcon from '@mui/icons-material/Liquor';
+import WineBarIcon from '@mui/icons-material/WineBar';
 
 // Styled components for decorative elements
 const DecorativeCircle = styled(Box)(({ theme, color = 'primary.main', size = 100, opacity = 0.1, top, left, right, bottom }) => ({
@@ -69,6 +82,34 @@ const DecorativeShape = styled(Box)(({ theme, color = 'primary.main', opacity = 
   bottom: bottom,
   zIndex: 0,
   transform: shape === 'square' ? 'rotate(20deg)' : 'none',
+}));
+
+const StyledAlert = styled(Alert)(({ theme }) => ({
+  borderRadius: 12,
+  boxShadow: theme.shadows[1],
+  marginBottom: theme.spacing(2),
+  '& .MuiAlert-icon': {
+    alignItems: 'center',
+  }
+}));
+
+const RecipeCard = styled(Card)(({ theme }) => ({
+  borderRadius: 12,
+  overflow: 'hidden',
+  height: '100%',
+  transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+  boxShadow: theme.shadows[1],
+  '&:hover': {
+    transform: 'translateY(-4px)',
+    boxShadow: theme.shadows[3],
+  }
+}));
+
+const GradientText = styled(Typography)(({ theme }) => ({
+  background: `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
+  WebkitBackgroundClip: 'text',
+  WebkitTextFillColor: 'transparent',
+  display: 'inline-block',
 }));
 
 const Dashboard = () => {
@@ -159,7 +200,7 @@ const Dashboard = () => {
     }
   }, [recipes, ingredients, suppliers]);
   
-  // Mock data for recent activity
+  // Recent recipes
   const recentRecipes = recipes?.slice(0, 3) || [];
   
   // Welcome message based on time of day
@@ -172,414 +213,363 @@ const Dashboard = () => {
   
   return (
     <Container>
-      <Box mb={4} mt={2}>
-        <Typography variant="h3" fontWeight={800} gutterBottom>
-          {getTimeBasedGreeting()}, {user?.name?.split(' ')[0] || 'Chef'}
-        </Typography>
-        <Typography variant="subtitle1" color="text.secondary">
-          Here's what's happening with your recipes and ingredients today.
-        </Typography>
-      </Box>
-      
-      <Grid container spacing={3}>
-        {/* Key Stats Row - Colorful cards with big numbers */}
-        <Grid item xs={6} sm={4} md={3} lg={2}>
-          <BentoCard
-            colorVariant="purple"
-            accent="primary"
-            clickable
-            avatar={<MenuBookIcon />}
-            avatarBg="primary.main"
-            statsNumber={stats.recipes}
-            statsCaption="Recipes"
-            onClick={() => window.location.href = '/recipes'}
-          />
-        </Grid>
+      <Box sx={{ position: 'relative', overflow: 'hidden' }}>
+        {/* Decorative elements */}
+        <DecorativeCircle color="primary.main" size={180} opacity={0.05} top={-50} right={-50} />
+        <DecorativeCircle color="secondary.main" size={120} opacity={0.05} bottom={100} left={-60} />
+        <DecorativeShape color="info.main" opacity={0.05} top={120} right={60} shape="square" />
         
-        <Grid item xs={6} sm={4} md={3} lg={2}>
-          <BentoCard
-            colorVariant="blue"
-            accent="info"
-            clickable
-            avatar={<InventoryIcon />}
-            avatarBg="info.main"
-            statsNumber={stats.ingredients}
-            statsCaption="Ingredients"
-            onClick={() => window.location.href = '/inventory'}
-          />
-        </Grid>
+        <Box mb={4} mt={2} className="animate-fade-in">
+          <Typography variant="h3" fontWeight={800} gutterBottom>
+            {getTimeBasedGreeting()}, <GradientText>{user?.name?.split(' ')[0] || 'Bartender'}</GradientText>
+          </Typography>
+          <Typography variant="subtitle1" color="text.secondary">
+            Here's what's happening with your cocktails and bar inventory today.
+          </Typography>
+        </Box>
         
-        <Grid item xs={6} sm={4} md={3} lg={2}>
-          <BentoCard
-            colorVariant="orange"
-            accent="secondary"
-            clickable
-            avatar={<LocalShippingIcon />}
-            avatarBg="secondary.main"
-            statsNumber={stats.suppliers}
-            statsCaption="Suppliers"
-            onClick={() => window.location.href = '/suppliers'}
-          />
-        </Grid>
-        
-        <Grid item xs={6} sm={4} md={3} lg={2}>
-          <BentoCard
-            colorVariant="green"
-            accent="success"
-            clickable
-            avatar={<CategoryIcon />}
-            avatarBg="success.main"
-            statsNumber={stats.categories}
-            statsCaption="Categories"
-            onClick={() => window.location.href = '/recipes?view=categories'}
-          />
-        </Grid>
-        
-        <Grid item xs={6} sm={4} md={3} lg={2}>
-          <BentoCard
-            colorVariant="yellow"
-            accent="warning"
-            clickable
-            avatar={<WarningIcon />}
-            avatarBg="warning.main"
-            statsNumber={stats.lowStock}
-            statsCaption="Low Stock"
-            onClick={() => window.location.href = '/inventory?filter=lowStock'}
-          />
-        </Grid>
-        
-        <Grid item xs={6} sm={4} md={3} lg={2}>
-          <BentoCard
-            colorVariant="purple"
-            accent="primary"
-            clickable
-            avatar={<RocketLaunchIcon />}
-            avatarBg="primary.main"
-            statsNumber={stats.activeRecipes}
-            statsCaption="Active Recipes"
-            onClick={() => window.location.href = '/recipes?status=active'}
-          />
-        </Grid>
-        
-        {/* Welcome Card - Larger banner with greeting and quick actions */}
-        <Grid item xs={12} md={8}>
-          <BentoCard
-            title="Welcome to Recipify"
-            subtitle="Your recipes and inventory at a glance"
-            colorVariant="blue"
-            sx={{ position: 'relative', overflow: 'hidden' }}
-          >
-            <DecorativeCircle color="info.light" size={150} opacity={0.2} top="-40px" right="-40px" />
-            <DecorativeShape color="primary.light" opacity={0.15} bottom="10px" right="30px" shape="square" />
-            
-            <Box sx={{ position: 'relative', zIndex: 1 }}>
-              <Typography variant="h5" fontWeight={700} gutterBottom>
-                Quick Actions
-              </Typography>
-              
-              <Grid container spacing={2} mt={1}>
-                <Grid item xs={12} sm={4}>
-                  <Button
-                    variant="contained"
-                    color="primary"
+        <Grid container spacing={3}>
+          {/* Key Stats Row - Colorful cards with big numbers */}
+          <Grid item xs={6} sm={4} md={3} lg={2} className="animate-slide-up" sx={{ animationDelay: '0.1s' }}>
+            <BentoCard
+              colorVariant="purple"
+              accent="primary"
+              clickable
+              avatar={<LocalBarIcon />}
+              avatarBg="primary.main"
+              statsNumber={stats.recipes}
+              statsCaption="Cocktails"
+              statsColorVariant="primary"
+              onClick={() => window.location.href = '/recipes'}
+            />
+          </Grid>
+          
+          <Grid item xs={6} sm={4} md={3} lg={2} className="animate-slide-up" sx={{ animationDelay: '0.2s' }}>
+            <BentoCard
+              colorVariant="blue"
+              accent="info"
+              clickable
+              avatar={<LiquorIcon />}
+              avatarBg="info.main"
+              statsNumber={stats.ingredients}
+              statsCaption="Bar Stock"
+              statsColorVariant="info"
+              onClick={() => window.location.href = '/inventory'}
+            />
+          </Grid>
+          
+          <Grid item xs={6} sm={4} md={3} lg={2} className="animate-slide-up" sx={{ animationDelay: '0.3s' }}>
+            <BentoCard
+              colorVariant="orange"
+              accent="secondary"
+              clickable
+              avatar={<LocalShippingIcon />}
+              avatarBg="secondary.main"
+              statsNumber={stats.suppliers}
+              statsCaption="Distributors"
+              statsColorVariant="secondary"
+              onClick={() => window.location.href = '/suppliers'}
+            />
+          </Grid>
+          
+          <Grid item xs={6} sm={4} md={3} lg={2} className="animate-slide-up" sx={{ animationDelay: '0.4s' }}>
+            <BentoCard
+              colorVariant="green"
+              accent="success"
+              clickable
+              avatar={<CategoryIcon />}
+              avatarBg="success.main"
+              statsNumber={stats.categories}
+              statsCaption="Categories"
+              statsColorVariant="success"
+              onClick={() => window.location.href = '/recipes?view=categories'}
+            />
+          </Grid>
+          
+          <Grid item xs={6} sm={4} md={3} lg={2} className="animate-slide-up" sx={{ animationDelay: '0.5s' }}>
+            <BentoCard
+              colorVariant="yellow"
+              accent="warning"
+              clickable
+              avatar={<WarningIcon />}
+              avatarBg="warning.main"
+              statsNumber={stats.lowStock}
+              statsCaption="Low Stock"
+              statsColorVariant="warning"
+              onClick={() => window.location.href = '/inventory?filter=lowStock'}
+            />
+          </Grid>
+          
+          <Grid item xs={6} sm={4} md={3} lg={2} className="animate-slide-up" sx={{ animationDelay: '0.6s' }}>
+            <BentoCard
+              colorVariant="default"
+              accent="none"
+              clickable
+              avatar={<AddIcon />}
+              avatarBg="primary.main"
+              title="Quick Add"
+              subtitle="Create new item"
+              onClick={() => {}}
+              footer={
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                  <Button 
+                    component={Link} 
+                    to="/recipes/add" 
+                    size="small" 
+                    startIcon={<LocalBarIcon />}
                     fullWidth
-                    startIcon={<AddIcon />}
-                    component={Link}
-                    to="/recipes/add"
-                    sx={{ py: 1.5 }}
+                    variant="outlined"
                   >
-                    New Recipe
+                    Cocktail
                   </Button>
-                </Grid>
-                
-                <Grid item xs={12} sm={4}>
-                  <Button
-                    variant="contained"
-                    color="secondary"
+                  <Button 
+                    component={Link} 
+                    to="/inventory/add" 
+                    size="small" 
+                    startIcon={<LiquorIcon />}
                     fullWidth
-                    startIcon={<AddIcon />}
-                    component={Link}
-                    to="/inventory/add"
-                    sx={{ py: 1.5 }}
+                    variant="outlined"
                   >
-                    Add Ingredient
+                    Spirit/Mixer
                   </Button>
-                </Grid>
-                
-                <Grid item xs={12} sm={4}>
-                  <Button
-                    variant="contained"
-                    color="success"
-                    fullWidth
-                    startIcon={<AttachMoneyIcon />}
-                    component={Link}
-                    to="/costing/calculator"
-                    sx={{ py: 1.5 }}
-                  >
-                    Cost Calculator
-                  </Button>
-                </Grid>
-              </Grid>
-              
-              <Box mt={4} display="flex" alignItems="center" justifyContent="space-between">
-                <Typography variant="body1">
-                  Explore your dashboard to see your recipe performance and inventory status.
-                </Typography>
-                
+                </Box>
+              }
+            />
+          </Grid>
+          
+          {/* Low Stock Alerts */}
+          <Grid item xs={12} md={6} lg={4} className="animate-slide-up" sx={{ animationDelay: '0.7s' }}>
+            <BentoCard
+              title="Low Stock Alerts"
+              subtitle="Items that need attention"
+              avatar={<WarningIcon />}
+              avatarBg="warning.main"
+              accent="warning"
+              action={
                 <Button 
-                  variant="text" 
-                  color="primary"
+                  component={Link} 
+                  to="/inventory?filter=lowStock" 
+                  size="small" 
                   endIcon={<ArrowForwardIcon />}
-                  component={Link}
-                  to="/profile"
                 >
-                  View Profile
+                  View All
                 </Button>
-              </Box>
-            </Box>
-          </BentoCard>
-        </Grid>
-        
-        {/* Low Stock Alerts Card */}
-        <Grid item xs={12} md={4}>
-          <BentoCard
-            title="Low Stock Alerts"
-            subtitle="Items that need your attention"
-            avatar={<NotificationsIcon />}
-            avatarBg="warning.main"
-            colorVariant="yellow"
-            sx={{ height: '100%' }}
-          >
-            {alerts.length > 0 ? (
-              <Box>
-                {alerts.map((item, index) => (
-                  <Box key={item._id || index} mb={2}>
-                    <Box display="flex" justifyContent="space-between" alignItems="center">
-                      <Typography variant="subtitle1" fontWeight={600}>
-                        {item.name}
-                      </Typography>
-                      <Chip 
-                        label={item.currentStock < (item.minStock / 2) ? "Critical" : "Low"} 
-                        color={item.currentStock < (item.minStock / 2) ? "error" : "warning"}
-                        size="small"
-                      />
-                    </Box>
-                    <Box display="flex" alignItems="center" mt={1}>
-                      <Box width="100%" mr={1}>
-                        <LinearProgress 
-                          variant="determinate" 
-                          value={(item.currentStock / item.minStock) * 50} 
-                          color={item.currentStock < (item.minStock / 2) ? "error" : "warning"}
-                          sx={{ height: 8, borderRadius: 4 }}
-                        />
-                      </Box>
-                      <Typography variant="body2" fontWeight={500}>
-                        {item.currentStock} / {item.minStock}
-                      </Typography>
-                    </Box>
-                  </Box>
-                ))}
-                
-                <Button
-                  variant="outlined"
-                  color="warning"
-                  fullWidth
-                  component={Link}
-                  to="/inventory?filter=lowStock"
-                  sx={{ mt: 1 }}
-                >
-                  View All Alerts
-                </Button>
-              </Box>
-            ) : (
-              <Alert severity="success" sx={{ mt: 2 }}>
-                Good job! All items are well stocked.
-              </Alert>
-            )}
-          </BentoCard>
-        </Grid>
-        
-        {/* Recent Recipes */}
-        <Grid item xs={12} md={6}>
-          <BentoCard
-            title="Recent Recipes"
-            subtitle="Your latest culinary creations"
-            avatar={<StarIcon />}
-            avatarBg="primary.main"
-            colorVariant="purple"
-            divider
-          >
-            {recentRecipes.length > 0 ? (
-              <Box>
-                {recentRecipes.map((recipe, index) => (
-                  <Box key={recipe._id || index} mb={index < recentRecipes.length - 1 ? 2 : 0}>
-                    <Box display="flex" justifyContent="space-between" alignItems="center">
-                      <Box display="flex" alignItems="center">
-                        <Avatar 
-                          src={recipe.image}
-                          alt={recipe.name}
-                          sx={{ 
-                            width: 48, 
-                            height: 48, 
-                            mr: 2,
-                            bgcolor: recipe.image ? 'transparent' : 'primary.light',
-                          }}
-                        >
-                          {!recipe.image && <RestaurantIcon />}
-                        </Avatar>
-                        <Box>
-                          <Typography variant="subtitle1" fontWeight={600}>
-                            {recipe.name}
-                          </Typography>
-                          <Typography variant="body2" color="text.secondary">
-                            {recipe.primaryCategory || 'Uncategorized'} • {recipe.status ? recipe.status.charAt(0).toUpperCase() + recipe.status.slice(1) : 'Draft'}
-                          </Typography>
-                        </Box>
-                      </Box>
-                      <IconButton 
-                        size="small" 
+              }
+            >
+              {alerts.length > 0 ? (
+                <List disablePadding>
+                  {alerts.map((alert, index) => (
+                    <React.Fragment key={alert._id || index}>
+                      <ListItem 
                         component={Link} 
-                        to={`/recipes/${recipe._id}`}
-                        color="primary"
+                        to={`/inventory/${alert._id}`}
                         sx={{ 
-                          bgcolor: 'primary.light', 
-                          color: 'primary.main',
-                          '&:hover': { bgcolor: 'primary.main', color: 'white' }
+                          px: 0, 
+                          py: 1.5,
+                          borderRadius: 2,
+                          '&:hover': {
+                            backgroundColor: 'rgba(0, 0, 0, 0.02)',
+                          }
                         }}
                       >
-                        <ArrowForwardIcon />
-                      </IconButton>
-                    </Box>
-                    {index < recentRecipes.length - 1 && <Divider sx={{ my: 2 }} />}
-                  </Box>
-                ))}
-                
-                <Button
-                  variant="outlined"
-                  color="primary"
-                  fullWidth
-                  component={Link}
-                  to="/recipes"
-                  sx={{ mt: 2 }}
+                        <ListItemAvatar>
+                          <Avatar 
+                            sx={{ 
+                              bgcolor: 'warning.light',
+                              color: 'warning.dark'
+                            }}
+                          >
+                            <LiquorIcon />
+                          </Avatar>
+                        </ListItemAvatar>
+                        <ListItemText 
+                          primary={
+                            <Typography variant="subtitle2" fontWeight={600}>
+                              {alert.name}
+                            </Typography>
+                          }
+                          secondary={
+                            <Typography variant="body2" color="text.secondary">
+                              {alert.currentStock} {alert.unit} remaining (min: {alert.minStock} {alert.unit})
+                            </Typography>
+                          }
+                        />
+                        <ListItemSecondaryAction>
+                          <Chip 
+                            label="Low" 
+                            size="small" 
+                            color="warning"
+                            sx={{ fontWeight: 600 }}
+                          />
+                        </ListItemSecondaryAction>
+                      </ListItem>
+                      {index < alerts.length - 1 && <Divider variant="inset" component="li" />}
+                    </React.Fragment>
+                  ))}
+                </List>
+              ) : (
+                <Box sx={{ py: 4, textAlign: 'center' }}>
+                  <Typography color="text.secondary">
+                    No low stock alerts at the moment
+                  </Typography>
+                </Box>
+              )}
+            </BentoCard>
+          </Grid>
+          
+          {/* Recent Cocktails */}
+          <Grid item xs={12} md={6} lg={4} className="animate-slide-up" sx={{ animationDelay: '0.8s' }}>
+            <BentoCard
+              title="Recent Cocktails"
+              subtitle="Your latest creations"
+              avatar={<LocalBarIcon />}
+              avatarBg="primary.main"
+              accent="primary"
+              action={
+                <Button 
+                  component={Link} 
+                  to="/recipes" 
+                  size="small" 
+                  endIcon={<ArrowForwardIcon />}
                 >
-                  View All Recipes
+                  View All
                 </Button>
-              </Box>
-            ) : (
-              <Box>
-                <Alert severity="info" sx={{ mb: 2 }}>
-                  You haven't created any recipes yet.
-                </Alert>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  startIcon={<AddIcon />}
-                  component={Link}
-                  to="/recipes/add"
-                  fullWidth
-                >
-                  Create Your First Recipe
-                </Button>
-              </Box>
-            )}
-          </BentoCard>
-        </Grid>
-        
-        {/* Financial Metrics Card */}
-        <Grid item xs={12} md={6}>
-          <BentoCard
-            title="Financial Insights"
-            subtitle="Cost analysis and profitability overview"
-            avatar={<BarChartIcon />}
-            avatarBg="success.main"
-            colorVariant="green"
-            divider
-          >
-            <DecorativeShape color="success.light" opacity={0.2} bottom="20px" right="20px" shape="pill" />
-            
-            <Box sx={{ position: 'relative', zIndex: 1 }}>
-              <Grid container spacing={3}>
-                <Grid item xs={6}>
-                  <Typography variant="body2" color="text.secondary" gutterBottom>
-                    Average Cost of Sales
-                  </Typography>
-                  <Typography variant="h5" fontWeight={800} color="success.dark">
-                    32%
-                  </Typography>
-                  <Typography variant="body2" color="success.dark" fontWeight={500} sx={{ display: 'flex', alignItems: 'center' }}>
-                    <TrendingUpIcon fontSize="small" sx={{ mr: 0.5 }} />
-                    2% better than target
-                  </Typography>
-                </Grid>
-                
-                <Grid item xs={6}>
-                  <Typography variant="body2" color="text.secondary" gutterBottom>
-                    Average Gross Profit
-                  </Typography>
-                  <Typography variant="h5" fontWeight={800} color="success.dark">
-                    68%
-                  </Typography>
-                  <Typography variant="body2" color="success.dark" fontWeight={500}>
-                    Top recipe: 78%
-                  </Typography>
-                </Grid>
-                
-                <Grid item xs={12}>
-                  <Divider sx={{ my: 1 }} />
-                  <Typography variant="subtitle1" fontWeight={600} gutterBottom>
-                    Top Performing Recipes
-                  </Typography>
-                  
-                  <Grid container spacing={2}>
-                    <Grid item xs={6}>
-                      <BentoCard
-                        colorVariant="default"
-                        avatar={<EmojiEventsIcon />}
-                        avatarBg="warning.main"
-                        title="Highest Margin"
+              }
+            >
+              {recentRecipes.length > 0 ? (
+                <List disablePadding>
+                  {recentRecipes.map((recipe, index) => (
+                    <React.Fragment key={recipe._id || index}>
+                      <ListItem 
+                        component={Link} 
+                        to={`/recipes/${recipe._id}`}
+                        sx={{ 
+                          px: 0, 
+                          py: 1.5,
+                          borderRadius: 2,
+                          '&:hover': {
+                            backgroundColor: 'rgba(0, 0, 0, 0.02)',
+                          }
+                        }}
                       >
-                        <Typography variant="subtitle1" fontWeight={600}>
-                          {recipes?.[0]?.name || 'New York Cheesecake'}
-                        </Typography>
-                        <Typography variant="h5" fontWeight={800} color="warning.dark">
-                          78%
-                        </Typography>
-                      </BentoCard>
-                    </Grid>
-                    
-                    <Grid item xs={6}>
-                      <BentoCard
-                        colorVariant="default"
-                        avatar={<TimelineIcon />}
-                        avatarBg="info.main"
-                        title="Most Consistent"
-                      >
-                        <Typography variant="subtitle1" fontWeight={600}>
-                          {recipes?.[1]?.name || 'Classic Lasagna'}
-                        </Typography>
-                        <Typography variant="h5" fontWeight={800} color="info.dark">
-                          65%
-                        </Typography>
-                      </BentoCard>
-                    </Grid>
-                  </Grid>
+                        <ListItemAvatar>
+                          <Avatar 
+                            sx={{ 
+                              bgcolor: 'primary.light',
+                              color: 'primary.dark'
+                            }}
+                          >
+                            <LocalBarIcon />
+                          </Avatar>
+                        </ListItemAvatar>
+                        <ListItemText 
+                          primary={
+                            <Typography variant="subtitle2" fontWeight={600}>
+                              {recipe.name}
+                            </Typography>
+                          }
+                          secondary={
+                            <Typography variant="body2" color="text.secondary">
+                              {recipe.primaryCategory || 'Uncategorized'} • {recipe.yield?.quantity || ''} {recipe.yield?.unit || ''}
+                            </Typography>
+                          }
+                        />
+                        <ListItemSecondaryAction>
+                          <IconButton 
+                            component={Link} 
+                            to={`/recipes/${recipe._id}`}
+                            size="small"
+                          >
+                            <VisibilityIcon fontSize="small" />
+                          </IconButton>
+                        </ListItemSecondaryAction>
+                      </ListItem>
+                      {index < recentRecipes.length - 1 && <Divider variant="inset" component="li" />}
+                    </React.Fragment>
+                  ))}
+                </List>
+              ) : (
+                <Box sx={{ py: 4, textAlign: 'center' }}>
+                  <Typography color="text.secondary">
+                    No cocktails created yet
+                  </Typography>
+                  <Button 
+                    component={Link} 
+                    to="/recipes/add" 
+                    variant="contained" 
+                    startIcon={<AddIcon />}
+                    sx={{ mt: 2 }}
+                  >
+                    Create Cocktail
+                  </Button>
+                </Box>
+              )}
+            </BentoCard>
+          </Grid>
+          
+          {/* Quick Actions */}
+          <Grid item xs={12} lg={4} className="animate-slide-up" sx={{ animationDelay: '0.9s' }}>
+            <BentoCard
+              title="Quick Actions"
+              subtitle="Common tasks and shortcuts"
+              avatar={<RocketLaunchIcon />}
+              avatarBg="secondary.main"
+              accent="secondary"
+            >
+              <Grid container spacing={2}>
+                <Grid item xs={6}>
+                  <Button
+                    component={Link}
+                    to="/inventory/take"
+                    variant="outlined"
+                    fullWidth
+                    startIcon={<LiquorIcon />}
+                    sx={{ mb: 2, height: '100%' }}
+                  >
+                    Take Bar Inventory
+                  </Button>
+                </Grid>
+                <Grid item xs={6}>
+                  <Button
+                    component={Link}
+                    to="/recipes/import"
+                    variant="outlined"
+                    fullWidth
+                    startIcon={<LocalBarIcon />}
+                    sx={{ mb: 2, height: '100%' }}
+                  >
+                    Import Cocktail
+                  </Button>
+                </Grid>
+                <Grid item xs={6}>
+                  <Button
+                    component={Link}
+                    to="/suppliers/add"
+                    variant="outlined"
+                    fullWidth
+                    startIcon={<LocalShippingIcon />}
+                    sx={{ mb: 2, height: '100%' }}
+                  >
+                    Add Distributor
+                  </Button>
+                </Grid>
+                <Grid item xs={6}>
+                  <Button
+                    component={Link}
+                    to="/inventory/locations"
+                    variant="outlined"
+                    fullWidth
+                    startIcon={<CategoryIcon />}
+                    sx={{ mb: 2, height: '100%' }}
+                  >
+                    Manage Bar Sections
+                  </Button>
                 </Grid>
               </Grid>
-              
-              <Button
-                variant="outlined"
-                color="success"
-                fullWidth
-                component={Link}
-                to="/costing/reports"
-                sx={{ mt: 3 }}
-              >
-                View Financial Reports
-              </Button>
-            </Box>
-          </BentoCard>
+            </BentoCard>
+          </Grid>
         </Grid>
-      </Grid>
+      </Box>
     </Container>
   );
 };

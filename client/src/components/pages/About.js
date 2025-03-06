@@ -9,10 +9,12 @@ import {
   CardContent,
   Divider
 } from '@mui/material';
-import RestaurantMenuIcon from '@mui/icons-material/RestaurantMenu';
+import LocalBarIcon from '@mui/icons-material/LocalBar';
 import InventoryIcon from '@mui/icons-material/Inventory';
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import CalculateIcon from '@mui/icons-material/Calculate';
+import LiquorIcon from '@mui/icons-material/Liquor';
+import WineBarIcon from '@mui/icons-material/WineBar';
 
 const About = () => {
   return (
@@ -23,14 +25,14 @@ const About = () => {
             About Recipify
           </Typography>
           <Typography variant="h6" color="text.secondary" gutterBottom>
-            The Ultimate Recipe Management Platform for Professional Chefs
+            The Ultimate Cocktail Management Platform for Professional Bartenders
           </Typography>
           <Divider sx={{ my: 3 }} />
         </Box>
 
         <Typography variant="body1" paragraph>
-          Recipify is a comprehensive recipe management system designed specifically for professional chefs and food service businesses. 
-          Our platform streamlines the process of creating, costing, and managing recipes, helping you optimize your kitchen operations 
+          Recipify is a comprehensive cocktail management system designed specifically for professional bartenders and cocktail bars. 
+          Our platform streamlines the process of creating, costing, and managing cocktail recipes, helping you optimize your bar operations 
           and maximize profitability.
         </Typography>
 
@@ -43,12 +45,12 @@ const About = () => {
             <Card sx={{ height: '100%' }}>
               <CardContent>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                  <RestaurantMenuIcon color="primary" sx={{ fontSize: 30, mr: 2 }} />
-                  <Typography variant="h6">Recipe Management</Typography>
+                  <LocalBarIcon color="primary" sx={{ fontSize: 30, mr: 2 }} />
+                  <Typography variant="h6">Cocktail Management</Typography>
                 </Box>
                 <Typography variant="body2" color="text.secondary">
-                  Create, store, and organize your recipes in one central location. Add detailed instructions, 
-                  cooking methods, and preparation notes. Categorize recipes for easy access and search.
+                  Create, store, and organize your signature cocktails in one central location. Add detailed instructions, 
+                  mixing methods, and presentation notes. Categorize drinks for easy access and search.
                 </Typography>
               </CardContent>
             </Card>
@@ -58,12 +60,12 @@ const About = () => {
             <Card sx={{ height: '100%' }}>
               <CardContent>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                  <InventoryIcon color="secondary" sx={{ fontSize: 30, mr: 2 }} />
-                  <Typography variant="h6">Ingredient Database</Typography>
+                  <LiquorIcon color="secondary" sx={{ fontSize: 30, mr: 2 }} />
+                  <Typography variant="h6">Spirit & Mixer Database</Typography>
                 </Box>
                 <Typography variant="body2" color="text.secondary">
-                  Maintain a comprehensive database of ingredients with costs, allergen information, 
-                  and nutritional data. Link ingredients to suppliers for streamlined ordering and inventory management.
+                  Maintain a comprehensive database of spirits, mixers, and garnishes with costs, ABV information, 
+                  and product details. Link products to distributors for streamlined ordering and inventory management.
                 </Typography>
               </CardContent>
             </Card>
@@ -74,11 +76,11 @@ const About = () => {
               <CardContent>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                   <CalculateIcon color="success" sx={{ fontSize: 30, mr: 2 }} />
-                  <Typography variant="h6">Cost Analysis</Typography>
+                  <Typography variant="h6">Pour Cost Analysis</Typography>
                 </Box>
                 <Typography variant="body2" color="text.secondary">
-                  Automatically calculate recipe costs based on ingredient prices. Determine accurate portion costs, 
-                  selling prices, and profit margins. Analyze the financial performance of your menu items.
+                  Automatically calculate cocktail costs based on spirit and mixer prices. Determine accurate pour costs, 
+                  selling prices, and profit margins. Analyze the financial performance of your signature drinks.
                 </Typography>
               </CardContent>
             </Card>
@@ -89,11 +91,11 @@ const About = () => {
               <CardContent>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                   <LocalShippingIcon color="info" sx={{ fontSize: 30, mr: 2 }} />
-                  <Typography variant="h6">Supplier Management</Typography>
+                  <Typography variant="h6">Distributor Management</Typography>
                 </Box>
                 <Typography variant="body2" color="text.secondary">
-                  Keep track of your suppliers with detailed contact information. Associate ingredients with specific 
-                  suppliers for streamlined ordering and inventory management.
+                  Keep track of your liquor distributors with detailed contact information. Associate products with specific 
+                  distributors for streamlined ordering and bar inventory management.
                 </Typography>
               </CardContent>
             </Card>
@@ -105,13 +107,13 @@ const About = () => {
             About the Team
           </Typography>
           <Typography variant="body1" paragraph>
-            Recipify was developed by a team of software engineers with extensive experience in the food service industry. 
-            We understand the unique challenges faced by professional chefs and kitchen managers, and we've built this 
+            Recipify was developed by a team of software engineers with extensive experience in the bar and hospitality industry. 
+            We understand the unique challenges faced by professional bartenders and bar managers, and we've built this 
             platform to address those specific needs.
           </Typography>
           <Typography variant="body1">
-            Our mission is to help food service businesses optimize their operations, reduce waste, and increase profitability 
-            through better recipe and ingredient management.
+            Our mission is to help cocktail bars optimize their operations, reduce waste, and increase profitability 
+            through better cocktail recipe and spirit inventory management.
           </Typography>
         </Box>
 
