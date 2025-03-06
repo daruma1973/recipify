@@ -780,7 +780,18 @@ const Ingredients = () => {
       { id: 'status', label: 'Status', align: 'center' },
       { id: 'actions', label: 'Actions', align: 'center' },
     ],
-    1: [ // Wine Details tab
+    1: [ // Product Format tab
+      { id: 'product', label: 'Product Name', align: 'left' },
+      { id: 'unitSize', label: 'Unit Size', align: 'center' },
+      { id: 'packagingType', label: 'Packaging Type', align: 'center' },
+      { id: 'upc', label: 'UPC', align: 'center' },
+      { id: 'image', label: 'Image', align: 'center' },
+      { id: 'lowPar', label: 'Low Par', align: 'center' },
+      { id: 'highPar', label: 'High Par', align: 'center' },
+      { id: 'status', label: 'Status', align: 'center' },
+      { id: 'actions', label: 'Actions', align: 'center' },
+    ],
+    2: [ // Wine Details tab
       { id: 'product', label: 'Product Name', align: 'left' },
       { id: 'wineStyle', label: 'Wine Style', align: 'center' },
       { id: 'grapeVariety', label: 'Grape Variety', align: 'center' },
@@ -790,23 +801,12 @@ const Ingredients = () => {
       { id: 'status', label: 'Status', align: 'center' },
       { id: 'actions', label: 'Actions', align: 'center' },
     ],
-    2: [ // Additional Info tab
+    3: [ // Additional Info tab
       { id: 'product', label: 'Product Name', align: 'left' },
       { id: 'supplier', label: 'Supplier', align: 'center' },
       { id: 'price', label: 'Price', align: 'center' },
       { id: 'stock', label: 'Stock', align: 'center' },
       { id: 'location', label: 'Location', align: 'center' },
-      { id: 'status', label: 'Status', align: 'center' },
-      { id: 'actions', label: 'Actions', align: 'center' },
-    ],
-    3: [ // Product Format tab
-      { id: 'product', label: 'Product Name', align: 'left' },
-      { id: 'unitSize', label: 'Unit Size', align: 'center' },
-      { id: 'packagingType', label: 'Packaging Type', align: 'center' },
-      { id: 'upc', label: 'UPC', align: 'center' },
-      { id: 'image', label: 'Image', align: 'center' },
-      { id: 'lowPar', label: 'Low Par', align: 'center' },
-      { id: 'highPar', label: 'High Par', align: 'center' },
       { id: 'status', label: 'Status', align: 'center' },
       { id: 'actions', label: 'Actions', align: 'center' },
     ],
@@ -1223,9 +1223,9 @@ const Ingredients = () => {
 
       <Tabs value={tabValue} onChange={handleTabChange} style={{ marginBottom: '20px' }}>
         <Tab label="All Products" />
+        <Tab label="Product Format" />
         <Tab label="Wine Details" />
         <Tab label="Additional Info" />
-        <Tab label="Product Format" />
       </Tabs>
 
       <TableContainer component={Paper}>
