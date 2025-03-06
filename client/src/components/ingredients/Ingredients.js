@@ -53,6 +53,7 @@ import AlertContext from '../../context/alert/alertContext';
 
 // Components
 import IngredientCSVUpload from './IngredientCSVUpload';
+import Container from '../layout/Container';
 
 // Simple inline edit field component
 const InlineEditField = ({ value, onSave, type = 'text' }) => {
@@ -1150,7 +1151,7 @@ const Ingredients = () => {
   };
 
   return (
-    <div>
+    <Container disablePaper>
       <Typography variant="h4">Inventory Management</Typography>
       <Typography variant="body1">
         Manage your inventory, track stock levels, and update product information
@@ -1666,7 +1667,7 @@ const Ingredients = () => {
           </Button>
         </DialogActions>
       </Dialog>
-    </div>
+    </Container>
   );
 };
 
